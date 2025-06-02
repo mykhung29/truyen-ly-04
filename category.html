@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thể loại: Action - Web Đọc Truyện</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/layout.css">
+
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Properties */
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --border-light: #e2e8f0;
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        /* Global Styles */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+
+        /* Breadcrumb Styles */
+        .breadcrumb {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .breadcrumb::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="20" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        /* Filter Sidebar */
+        .filter-sidebar {
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            top: 120px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            margin-bottom: 24px;
+        }
+
+        .filter-section {
+            border-bottom: 1px solid var(--border-light);
+            padding: 24px;
+        }
+
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+
+        .filter-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin: 6px 0;
+            border: 1px solid transparent;
+        }
+
+        .filter-option:hover {
+            background: var(--bg-light);
+            transform: translateX(4px);
+        }
+
+        .filter-option.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Manga Grid */
+        .manga-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            padding: 24px 0;
+        }
+
+        .manga-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            transition: var(--transition-smooth);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .manga-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .manga-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .manga-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .manga-cover {
+            position: relative;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+        }
+
+        .manga-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+
+        .manga-card:hover .manga-cover img {
+            transform: scale(1.1);
+        }
+
+        .manga-status {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .status-ongoing {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+        }
+
+        .status-completed {
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+        }
+
+        .status-hiatus {
+            background: rgba(245, 158, 11, 0.9);
+            color: white;
+        }
+
+        .manga-rating {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .manga-info {
+            padding: 20px;
+        }
+
+        .manga-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .manga-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .manga-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .manga-author {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .manga-chapters {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .manga-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .manga-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        /* Widget Styles */
+        .widget {
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .widget-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 20px 24px;
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .widget-content {
+            padding: 24px;
+        }
+
+        .trending-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+        }
+
+        .trending-item:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-color);
+            transform: translateX(4px);
+        }
+
+        .trending-rank {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .trending-info h4 {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .trending-info p {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-cloud .tag {
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .tag-cloud .tag:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 40px 0;
+        }
+
+        .page-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-weight: 600;
+        }
+
+        .page-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .page-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-btn.disabled:hover {
+            background: var(--bg-white);
+            color: var(--text-secondary);
+            transform: none;
+        }
+
+        /* Sort and View Options */
+        .controls-bar {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 20px 24px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .sort-options {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sort-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            background: var(--bg-white);
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            color: var(--text-secondary);
+        }
+
+        .view-btn.active {
+            background: var(--bg-white);
+            color: var(--primary-color);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Search in Category */
+        .category-search {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .category-search input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            background: var(--bg-white);
+            font-size: 16px;
+            transition: var(--transition-smooth);
+        }
+
+        .category-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .category-search i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-light);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design
+        @media (max-width: 1024px) {
+            .manga-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 20px;
+            }
+            
+            .filter-sidebar {
+                position: static;
+                max-height: none;
+                margin-bottom: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .manga-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 16px;
+            }
+            
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .sort-options {
+                justify-content: space-between;
+            }
+            
+            .breadcrumb {
+                padding: 16px 0;
+            }
+            
+            .widget-content {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .manga-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            
+            .manga-info {
+                padding: 16px;
+            }
+            
+            .manga-title {
+                font-size: 16px;
+            }
+            
+            .controls-bar {
+                padding: 16px;
+            }
+        } */
+
+        /* Custom Scrollbar */
+        .filter-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filter-sidebar::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 3px;
+        }
+
+        .filter-sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .filter-sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+     <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+   <!-- Header -->
+    <header class="header" id="header">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col gap-2 md:flex-row items-center justify-between h-fit">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="logo flex items-center">
+                        <div class="logo-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <span>MangaVerse</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="desktop-nav hidden lg:flex items-center space-x-1">
+                    <div class="nav-item relative">
+                        <a href="index.html" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            Trang chủ
+                        </a>
+                    </div>
+
+                    <div class="nav-item relative">
+                        <a href="category.html" class="nav-link">
+                            <i class="fas fa-list"></i>
+                            Thể loại
+                        </a>
+                        <div class="mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-fire mr-2"></i>Phổ biến</h4>
+                                    <a href="category.html" class="mega-menu-link">Action</a>
+                                    <a href="category.html" class="mega-menu-link">Romance</a>
+                                    <a href="category.html" class="mega-menu-link">Comedy</a>
+                                    <a href="category.html" class="mega-menu-link">Drama</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-star mr-2"></i>Đặc sắc</h4>
+                                    <a href="category.html" class="mega-menu-link">Fantasy</a>
+                                    <a href="category.html" class="mega-menu-link">Sci-Fi</a>
+                                    <a href="category.html" class="mega-menu-link">Horror</a>
+                                    <a href="category.html" class="mega-menu-link">Mystery</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-globe mr-2"></i>Theo quốc gia</h4>
+                                    <a href="category.html" class="mega-menu-link">🇯🇵 Manga</a>
+                                    <a href="category.html" class="mega-menu-link">🇰🇷 Manhwa</a>
+                                    <a href="category.html" class="mega-menu-link">🇨🇳 Manhua</a>
+                                    <a href="category.html" class="mega-menu-link">🇻🇳 Truyện Việt</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        Mới cập nhật
+                    </a>
+
+                </nav>
+
+                <!-- Search Bar -->
+                <div class="search-container hidden lg:block">
+                    <input type="text" class="search-input" placeholder="Tìm truyện, tác giả..." id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>One Piece</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>Naruto</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-user"></i>
+                            <span>Oda Eiichiro</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-2">
+                    <!-- Theme Toggle -->
+                    <button class="action-btn" onclick="toggleTheme()" title="Chuyển đổi chế độ">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Bookmarks -->
+                    <button class="action-btn" onclick="toggleBookmarks()" title="Bookmark">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="action-btn" onclick="toggleNotifications()" title="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <span>U</span>
+                        </div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-header">
+                                <h4>User Name</h4>
+                                <p>Thành viên VIP</p>
+                            </div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Hồ sơ
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-history"></i>
+                                Lịch sử đọc
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-heart"></i>
+                                Yêu thích
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-download"></i>
+                                Đã tải xuống
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Cài đặt
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn lg:hidden" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars" id="mobileMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="flex justify-between items-center mb-8">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span>MangaVerse</span>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="search-container mb-6">
+                <input type="text" class="search-input" placeholder="Tìm truyện, tác giả...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav>
+                <a href="index.html" class="mobile-nav-link">
+                    <i class="fas fa-home"></i>
+                    Trang chủ
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-list"></i>
+                    Thể loại
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-clock"></i>
+                    Mới cập nhật
+                </a>
+            </nav>
+
+            <!-- Mobile User Actions -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-user"></i>
+                    Hồ sơ
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-bookmark"></i>
+                    Bookmark
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-history"></i>
+                    Lịch sử đọc
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-cog"></i>
+                    Cài đặt
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <section class="breadcrumb mt-20">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <nav class="flex items-center space-x-2 text-sm mb-2">
+                        <a href="index.html" class="hover:text-blue-200 transition-colors">Trang chủ</a>
+                        <i class="fas fa-chevron-right text-xs opacity-60"></i>
+                        <a href="category.html" class="hover:text-blue-200 transition-colors">Thể loại</a>
+                        <i class="fas fa-chevron-right text-xs opacity-60"></i>
+                        <span class="text-blue-200">Action</span>
+                    </nav>
+                    <h1 class="text-3xl font-bold mb-2">Truyện Action</h1>
+                    <p class="text-blue-100 opacity-90">Khám phá những bộ truyện hành động đầy kịch tính và phiêu lưu</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold">1,247</div>
+                    <div class="text-sm text-blue-200 opacity-80">truyện</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-1">
+                <div class="filter-sidebar slide-in">
+                    <!-- Category Search -->
+                    <div class="filter-section">
+                        <div class="category-search">
+                            <input type="text" placeholder="Tìm trong thể loại Action..." id="categorySearch">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-circle-notch text-blue-500"></i>
+                            Trạng thái
+                        </h3>
+                        <div class="filter-option active" data-filter="status" data-value="all">
+                            <input type="radio" name="status" value="all" checked>
+                            <span>Tất cả</span>
+                            <span class="ml-auto text-xs text-gray-400">(1,247)</span>
+                        </div>
+                        <div class="filter-option" data-filter="status" data-value="ongoing">
+                            <input type="radio" name="status" value="ongoing">
+                            <span>Đang tiến hành</span>
+                            <span class="ml-auto text-xs text-gray-400">(892)</span>
+                        </div>
+                        <div class="filter-option" data-filter="status" data-value="completed">
+                            <input type="radio" name="status" value="completed">
+                            <span>Hoàn thành</span>
+                            <span class="ml-auto text-xs text-gray-400">(298)</span>
+                        </div>
+                        <div class="filter-option" data-filter="status" data-value="hiatus">
+                            <input type="radio" name="status" value="hiatus">
+                            <span>Tạm ngưng</span>
+                            <span class="ml-auto text-xs text-gray-400">(57)</span>
+                        </div>
+                    </div>
+
+                    <!-- Year Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-calendar text-green-500"></i>
+                            Năm phát hành
+                        </h3>
+                        <div class="filter-option active" data-filter="year" data-value="all">
+                            <input type="radio" name="year" value="all" checked>
+                            <span>Tất cả</span>
+                        </div>
+                        <div class="filter-option" data-filter="year" data-value="2024">
+                            <input type="radio" name="year" value="2024">
+                            <span>2024</span>
+                            <span class="ml-auto text-xs text-gray-400">(156)</span>
+                        </div>
+                        <div class="filter-option" data-filter="year" data-value="2023">
+                            <input type="radio" name="year" value="2023">
+                            <span>2023</span>
+                            <span class="ml-auto text-xs text-gray-400">(234)</span>
+                        </div>
+                        <div class="filter-option" data-filter="year" data-value="2022">
+                            <input type="radio" name="year" value="2022">
+                            <span>2022</span>
+                            <span class="ml-auto text-xs text-gray-400">(189)</span>
+                        </div>
+                        <div class="filter-option" data-filter="year" data-value="older">
+                            <input type="radio" name="year" value="older">
+                            <span>Trước 2022</span>
+                            <span class="ml-auto text-xs text-gray-400">(668)</span>
+                        </div>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            Đánh giá
+                        </h3>
+                        <div class="filter-option active" data-filter="rating" data-value="all">
+                            <input type="radio" name="rating" value="all" checked>
+                            <span>Tất cả</span>
+                        </div>
+                        <div class="filter-option" data-filter="rating" data-value="5">
+                            <input type="radio" name="rating" value="5">
+                            <span>5 sao</span>
+                            <span class="ml-auto text-xs text-gray-400">(89)</span>
+                        </div>
+                        <div class="filter-option" data-filter="rating" data-value="4">
+                            <input type="radio" name="rating" value="4">
+                            <span>4+ sao</span>
+                            <span class="ml-auto text-xs text-gray-400">(456)</span>
+                        </div>
+                        <div class="filter-option" data-filter="rating" data-value="3">
+                            <input type="radio" name="rating" value="3">
+                            <span>3+ sao</span>
+                            <span class="ml-auto text-xs text-gray-400">(789)</span>
+                        </div>
+                    </div>
+
+                    <!-- Sub-genres -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-tags text-purple-500"></i>
+                            Thể loại phụ
+                        </h3>
+                        <div class="space-y-2">
+                            <label class="filter-option cursor-pointer">
+                                <input type="checkbox" class="rounded">
+                                <span>Adventure</span>
+                                <span class="ml-auto text-xs text-gray-400">(567)</span>
+                            </label>
+                            <label class="filter-option cursor-pointer">
+                                <input type="checkbox" class="rounded">
+                                <span>Supernatural</span>
+                                <span class="ml-auto text-xs text-gray-400">(423)</span>
+                            </label>
+                            <label class="filter-option cursor-pointer">
+                                <input type="checkbox" class="rounded">
+                                <span>Martial Arts</span>
+                                <span class="ml-auto text-xs text-gray-400">(389)</span>
+                            </label>
+                            <label class="filter-option cursor-pointer">
+                                <input type="checkbox" class="rounded">
+                                <span>Fantasy</span>
+                                <span class="ml-auto text-xs text-gray-400">(345)</span>
+                            </label>
+                            <label class="filter-option cursor-pointer">
+                                <input type="checkbox" class="rounded">
+                                <span>Sci-fi</span>
+                                <span class="ml-auto text-xs text-gray-400">(234)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Categories Widget -->
+                <div class="widget fade-in">
+                    <div class="widget-header">
+                        <i class="fas fa-fire"></i>
+                        Thể loại hot
+                    </div>
+                    <div class="widget-content">
+                        <div class="trending-item">
+                            <div class="trending-rank">1</div>
+                            <div class="trending-info">
+                                <h4>Romance</h4>
+                                <p>+234 truyện tuần này</p>
+                            </div>
+                        </div>
+                        <div class="trending-item">
+                            <div class="trending-rank">2</div>
+                            <div class="trending-info">
+                                <h4>Fantasy</h4>
+                                <p>+189 truyện tuần này</p>
+                            </div>
+                        </div>
+                        <div class="trending-item">
+                            <div class="trending-rank">3</div>
+                            <div class="trending-info">
+                                <h4>Action</h4>
+                                <p>+156 truyện tuần này</p>
+                            </div>
+                        </div>
+                        <div class="trending-item">
+                            <div class="trending-rank">4</div>
+                            <div class="trending-info">
+                                <h4>Comedy</h4>
+                                <p>+134 truyện tuần này</p>
+                            </div>
+                        </div>
+                        <div class="trending-item">
+                            <div class="trending-rank">5</div>
+                            <div class="trending-info">
+                                <h4>Drama</h4>
+                                <p>+98 truyện tuần này</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Tags Widget -->
+                <div class="widget fade-in">
+                    <div class="widget-header">
+                        <i class="fas fa-hashtag"></i>
+                        Tags phổ biến
+                    </div>
+                    <div class="widget-content">
+                        <div class="tag-cloud">
+                            <span class="tag">Overpowered MC</span>
+                            <span class="tag">Reincarnation</span>
+                            <span class="tag">Magic</span>
+                            <span class="tag">School Life</span>
+                            <span class="tag">Harem</span>
+                            <span class="tag">Isekai</span>
+                            <span class="tag">Cultivation</span>
+                            <span class="tag">System</span>
+                            <span class="tag">Revenge</span>
+                            <span class="tag">Demon Lord</span>
+                            <span class="tag">Guild</span>
+                            <span class="tag">Dungeon</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="lg:col-span-3">
+                <!-- Controls Bar -->
+                <div class="controls-bar fade-in">
+                    <div class="sort-options">
+                        <label class="text-sm font-medium text-gray-700">Sắp xếp:</label>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="popular">Phổ biến nhất</option>
+                            <option value="newest">Mới nhất</option>
+                            <option value="updated">Cập nhật gần đây</option>
+                            <option value="rating">Đánh giá cao</option>
+                            <option value="views">Lượt xem</option>
+                            <option value="chapters">Số chương</option>
+                            <option value="name">Tên A-Z</option>
+                        </select>
+                    </div>
+                    <div class="view-toggle">
+                        <div class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </div>
+                        <div class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Info -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="text-gray-600">
+                        Hiển thị <span class="font-semibold text-gray-800">1-24</span> trong tổng số <span class="font-semibold text-gray-800">1,247</span> truyện
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        Trang 1 / 52
+                    </div>
+                </div>
+
+                <!-- Manga Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in" id="mangaGrid">
+                    <!-- Manga Card 1 -->
+                    <div class="manga-card" onclick="goToMangaDetail('one-piece')">
+                        <div class="manga-cover">
+                            <img src="images/truyen1.jpg" alt="One Piece">
+                            <div class="manga-status status-ongoing">Ongoing</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.8
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">One Piece</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Oda Eiichiro</span>
+                                <span class="manga-chapters">1095+ chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Câu chuyện về Monkey D. Luffy, một cậu bé có khả năng co giãn như cao su sau khi vô tình ăn phải Trái Ác Quỷ...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Adventure</span>
+                                <span class="tag">Comedy</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manga Card 2 -->
+                    <div class="manga-card" onclick="goToMangaDetail('naruto')">
+                        <div class="manga-cover">
+                            <img src="images/truyen8.jpg" alt="Naruto">
+                            <div class="manga-status status-completed">Completed</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.5
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">Naruto</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Kishimoto Masashi</span>
+                                <span class="manga-chapters">700 chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Câu chuyện về Uzumaki Naruto, một ninja trẻ với ước mơ trở thành Hokage - người lãnh đạo làng của mình...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Martial Arts</span>
+                                <span class="tag">Supernatural</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manga Card 3 -->
+                    <div class="manga-card" onclick="goToMangaDetail('attack-on-titan')">
+                        <div class="manga-cover">
+                            <img src="images/truyen2.jpg" alt="Attack on Titan">
+                            <div class="manga-status status-completed">Completed</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.7
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">Attack on Titan</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Hajime Isayama</span>
+                                <span class="manga-chapters">139 chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Trong một thế giới nơi loài người sống trong nỗi sợ hãi trước những Titan khổng lồ, Eren Yeager quyết tâm tham gia quân đội...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Drama</span>
+                                <span class="tag">Horror</span>
+                                <span class="tag">Military</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manga Card 4 -->
+                    <div class="manga-card" onclick="goToMangaDetail('demon-slayer')">
+                        <div class="manga-cover">
+                            <img src="images/truyen3.jpg" alt="Demon Slayer">
+                            <div class="manga-status status-completed">Completed</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.3
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">Demon Slayer</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Koyoharu Gotouge</span>
+                                <span class="manga-chapters">205 chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Tanjiro Kamado trở thành thợ săn quỷ để cứu em gái mình khỏi lời nguyền biến thành quỷ và trả thù cho gia đình...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Supernatural</span>
+                                <span class="tag">Historical</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manga Card 5 -->
+                    <div class="manga-card" onclick="goToMangaDetail('my-hero-academia')">
+                        <div class="manga-cover">
+                            <img src="images/truyen4.jpg" alt="My Hero Academia">
+                            <div class="manga-status status-ongoing">Ongoing</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.1
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">My Hero Academia</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Kohei Horikoshi</span>
+                                <span class="manga-chapters">400+ chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Trong một thế giới nơi 80% dân số có siêu năng lực, Izuku Midoriya sinh ra không có năng lực nhưng vẫn mơ ước trở thành hero...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">School Life</span>
+                                <span class="tag">Super Power</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manga Card 6 -->
+                    <div class="manga-card" onclick="goToMangaDetail('jujutsu-kaisen')">
+                        <div class="manga-cover">
+                            <img src="images/truyen5.jpg" alt="Jujutsu Kaisen">
+                            <div class="manga-status status-ongoing">Ongoing</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.4
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">Jujutsu Kaisen</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Gege Akutami</span>
+                                <span class="manga-chapters">245+ chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Yuji Itadori, một học sinh trung học với sức mạnh thể chất phi thường, tham gia vào thế giới của Jujutsu Sorcerers...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Supernatural</span>
+                                <span class="tag">School Life</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- More manga cards... -->
+                    <div class="manga-card" onclick="goToMangaDetail('dragon-ball')">
+                        <div class="manga-cover">
+                            <img src="images/truyen6.jpg" alt="Dragon Ball">
+                            <div class="manga-status status-completed">Completed</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.6
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">Dragon Ball</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Akira Toriyama</span>
+                                <span class="manga-chapters">519 chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Cuộc phiêu lưu của Son Goku từ khi còn nhỏ, tìm kiếm bảy viên ngọc rồng để thực hiện ước nguyện...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Adventure</span>
+                                <span class="tag">Martial Arts</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="manga-card" onclick="goToMangaDetail('bleach')">
+                        <div class="manga-cover">
+                            <img src="images/truyen7.jpg" alt="Bleach">
+                            <div class="manga-status status-completed">Completed</div>
+                            <div class="manga-rating">
+                                <i class="fas fa-star"></i>
+                                9.2
+                            </div>
+                        </div>
+                        <div class="manga-info">
+                            <h3 class="manga-title">Bleach</h3>
+                            <div class="manga-meta">
+                                <span class="manga-author">Tite Kubo</span>
+                                <span class="manga-chapters">686 chương</span>
+                            </div>
+                            <p class="manga-description">
+                                Ichigo Kurosaki có thể nhìn thấy linh hồn và trở thành Shinigami để bảo vệ thế giới khỏi những Hollow độc ác...
+                            </p>
+                            <div class="manga-tags">
+                                <span class="tag">Supernatural</span>
+                                <span class="tag">Soul Society</span>
+                                <span class="tag">Shounen</span>
+                            </div>
+                            <div class="manga-actions">
+                                <a href="watch.html" class="btn btn-primary">
+                                    <i class="fas fa-play"></i>
+                                    Đọc ngay
+                                </a>
+                                <button class="btn btn-secondary">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading hidden" id="loadingState">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="page-btn disabled" id="prevPage">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="page-btn active" data-page="1">1</button>
+                    <button class="page-btn" data-page="2">2</button>
+                    <button class="page-btn" data-page="3">3</button>
+                    <button class="page-btn" data-page="4">4</button>
+                    <button class="page-btn" data-page="5">5</button>
+                    <span class="px-3 text-gray-500">...</span>
+                    <button class="page-btn" data-page="52">52</button>
+                    <button class="page-btn" id="nextPage">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="container mx-auto px-4 py-16">
+                <!-- Stats Section -->
+                <div class="stats-grid mb-12">
+                    <div class="stat-card">
+                        <div class="stat-number">15,000+</div>
+                        <div class="stat-label">Bộ truyện</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500K+</div>
+                        <div class="stat-label">Chapter</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2M+</div>
+                        <div class="stat-label">Người dùng</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Cập nhật/ngày</div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Company Info -->
+                    <div class="footer-section">
+                        <div class="flex items-center mb-6">
+                            <div class="logo-icon mr-3">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <span class="text-2xl font-bold">MangaVerse</span>
+                        </div>
+                        <p class="text-gray-300 mb-6 leading-relaxed">
+                            Nền tảng đọc truyện tranh hàng đầu với thư viện khổng lồ và trải nghiệm đọc tuyệt vời.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Discord">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                            <a href="#" class="social-link" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-link"></i>
+                            Liên kết nhanh
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-home"></i>
+                                Trang chủ
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fire"></i>
+                                Truyện hot
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-star"></i>
+                                Xếp hạng
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-clock"></i>
+                                Mới cập nhật
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-random"></i>
+                                Ngẫu nhiên
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-info-circle"></i>
+                                Về chúng tôi
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-tags"></i>
+                            Thể loại phổ biến
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fist-raised"></i>
+                                Action
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-heart"></i>
+                                Romance
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-laugh"></i>
+                                Comedy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-magic"></i>
+                                Fantasy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-ghost"></i>
+                                Horror
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-graduation-cap"></i>
+                                School Life
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Recent Updates -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Cập nhật gần đây
+                        </h3>
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen1.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>One Piece</h4>
+                                    <p>Chapter 1095 • 2 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen2.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>Naruto</h4>
+                                    <p>Chapter 995 • 1 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen7.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>Dragon Ball</h4>
+                                    <p>Chapter 2153 • 3 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Newsletter -->
+                        <div class="mt-6">
+                            <h4 class="text-white font-semibold mb-3">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Đăng ký nhận tin
+                            </h4>
+                            <p class="text-gray-300 mb-4 text-sm">
+                                Nhận thông báo chapter mới và tin tức manga mới nhất.
+                            </p>
+                            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                                <input type="email" class="newsletter-input" placeholder="Email của bạn..." required>
+                                <button type="submit" class="newsletter-btn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Đăng ký
+                                    </span>
+                                    <span class="loading hidden">
+                                        <div class="loading"></div>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p>&copy; 2024 MangaVerse. Tất cả quyền được bảo lưu.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Chính sách bảo mật</a>
+                            <a href="#">Điều khoản sử dụng</a>
+                            <a href="#">DMCA</a>
+                            <a href="#">Liên hệ</a>
+                            <a href="#">API</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+   <script src="js/layout.js"></script>
+
+    <script>
+        // Global variables
+        let currentPage = 1;
+        let totalPages = 52;
+        let currentFilters = {
+            status: 'all',
+            year: 'all',
+            rating: 'all',
+            subgenres: [],
+            sort: 'popular',
+            search: ''
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFilters();
+            initializePagination();
+            initializeCategorySearch();
+            initializeSorting();
+            initializeViewToggle();
+        });
+
+        // Filter functionality
+        function initializeFilters() {
+            // Radio button filters
+            document.querySelectorAll('.filter-option[data-filter]').forEach(option => {
+                option.addEventListener('click', function() {
+                    const filterType = this.dataset.filter;
+                    const filterValue = this.dataset.value;
+                    
+                    // Update active state
+                    document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = true;
+                    
+                    // Update filter
+                    currentFilters[filterType] = filterValue;
+                    applyFilters();
+                });
+            });
+
+            // Checkbox filters for subgenres
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const parent = this.closest('.filter-option');
+                    if (this.checked) {
+                        parent.classList.add('active');
+                        currentFilters.subgenres.push(this.value);
+                    } else {
+                        parent.classList.remove('active');
+                        currentFilters.subgenres = currentFilters.subgenres.filter(g => g !== this.value);
+                    }
+                    applyFilters();
+                });
+            });
+        }
+
+        // Search functionality
+       
+        function initializeCategorySearch() {
+            const searchInputCat = document.getElementById('categorySearch');
+            let searchTimeout;
+
+            if (searchInputCat) {
+                searchInputCat.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentFilters.search = this.value.toLowerCase();
+                    applyFilters();
+                }, 300);
+                });
+            }
+            }
+
+        // Sorting functionality
+        function initializeSorting() {
+            const sortSelect = document.getElementById('sortSelect');
+            sortSelect.addEventListener('change', function() {
+                currentFilters.sort = this.value;
+                applyFilters();
+                showSortingAnimation();
+            });
+        }
+
+        // View toggle functionality
+        function initializeViewToggle() {
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const view = this.dataset.view;
+                    
+                    // Update active state
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Apply view
+                    const grid = document.getElementById('mangaGrid');
+                    if (view === 'list') {
+                        grid.classList.add('list-view');
+                    } else {
+                        grid.classList.remove('list-view');
+                    }
+                });
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            showLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                hideLoading();
+                updateResultsInfo();
+                showFilterAnimation();
+            }, 800);
+        }
+
+        // Pagination
+        function initializePagination() {
+            document.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    goToPage(page);
+                });
+            });
+
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) goToPage(currentPage - 1);
+            });
+
+            document.getElementById('nextPage').addEventListener('click', () => {
+                if (currentPage < totalPages) goToPage(currentPage + 1);
+            });
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            updatePaginationUI();
+            showLoading();
+            
+            // Simulate page load
+            setTimeout(() => {
+                hideLoading();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                updateResultsInfo();
+            }, 600);
+        }
+
+        function updatePaginationUI() {
+            // Update active page
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.page == currentPage) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Update prev/next buttons
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            prevBtn.classList.toggle('disabled', currentPage === 1);
+            nextBtn.classList.toggle('disabled', currentPage === totalPages);
+        }
+
+        // Navigation functions
+        function goToMangaDetail(mangaSlug) {
+            window.location.href = `detail.html?manga=${mangaSlug}`;
+        }
+
+        // Loading states
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('mangaGrid').style.opacity = '0.5';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('mangaGrid').style.opacity = '1';
+        }
+
+        // Animation functions
+        function showFilterAnimation() {
+            const cards = document.querySelectorAll('.manga-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        function showSortingAnimation() {
+            const grid = document.getElementById('mangaGrid');
+            grid.style.transform = 'scale(0.95)';
+            grid.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                grid.style.transition = 'all 0.3s ease';
+                grid.style.transform = 'scale(1)';
+                grid.style.opacity = '1';
+            }, 200);
+        }
+
+        // Update results info
+        function updateResultsInfo() {
+            const startItem = (currentPage - 1) * 24 + 1;
+            const endItem = Math.min(currentPage * 24, 1247);
+            
+            document.querySelector('.text-gray-600').innerHTML = 
+                `Hiển thị <span class="font-semibold text-gray-800">${startItem}-${endItem}</span> trong tổng số <span class="font-semibold text-gray-800">1,247</span> truyện`;
+            
+            document.querySelector('.text-sm.text-gray-500').textContent = 
+                `Trang ${currentPage} / ${totalPages}`;
+        }
+
+        // Trending categories click handlers
+        document.querySelectorAll('.trending-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const categoryName = this.querySelector('h4').textContent;
+                window.location.href = `category.html?category=${categoryName.toLowerCase()}`;
+            });
+        });
+
+        // Tag cloud click handlers
+        document.querySelectorAll('.tag-cloud .tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const tagName = this.textContent;
+                // Add tag to search or filter
+                currentFilters.search = tagName.toLowerCase();
+                document.getElementById('categorySearch').value = tagName;
+                applyFilters();
+            });
+        });
+
+        // Bookmark functionality
+        document.querySelectorAll('.btn-secondary').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fas')) {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.style.background = 'var(--bg-light)';
+                    showNotification('Đã bỏ bookmark');
+                } else {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.style.background = 'var(--primary-color)';
+                    this.style.color = 'white';
+                    showNotification('Đã thêm vào bookmark');
+                }
+            });
+        });
+
+        // Notification system
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(full)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    if (currentPage > 1) {
+                        e.preventDefault();
+                        goToPage(currentPage - 1);
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (currentPage < totalPages) {
+                        e.preventDefault();
+                        goToPage(currentPage + 1);
+                    }
+                    break;
+                case '/':
+                    e.preventDefault();
+                    document.getElementById('categorySearch').focus();
+                    break;
+                case 'Escape':
+                    document.getElementById('categorySearch').blur();
+                    break;
+            }
+        });
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Lazy loading for images
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src || img.src;
+                    img.classList.remove('lazy');
+                    observer.unobserve(img);
+                }
+            });
+        });
+
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+
+        // Initialize tooltips
+        function initializeTooltips() {
+            const tooltipElements = document.querySelectorAll('[title]');
+            tooltipElements.forEach(element => {
+                element.addEventListener('mouseenter', showTooltip);
+                element.addEventListener('mouseleave', hideTooltip);
+            });
+        }
+
+        function showTooltip(e) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'absolute bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg z-50 pointer-events-none';
+            tooltip.textContent = e.target.getAttribute('title');
+            tooltip.style.top = e.target.offsetTop - 30 + 'px';
+            tooltip.style.left = e.target.offsetLeft + 'px';
+            e.target.setAttribute('data-original-title', e.target.getAttribute('title'));
+            e.target.removeAttribute('title');
+            document.body.appendChild(tooltip);
+        }
+
+        function hideTooltip(e) {
+            const tooltip = document.querySelector('.absolute.bg-gray-900');
+            if (tooltip) {
+                document.body.removeChild(tooltip);
+            }
+            if (e.target.getAttribute('data-original-title')) {
+                e.target.setAttribute('title', e.target.getAttribute('data-original-title'));
+                e.target.removeAttribute('data-original-title');
+            }
+        }
+
+        // Initialize everything
+        initializeTooltips();
+        
+        // Performance optimization
+        let ticking = false;
+        function updateOnScroll() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    // Add scroll-based animations here
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+        
+        window.addEventListener('scroll', updateOnScroll);
+    </script>
+</body>
+</html>

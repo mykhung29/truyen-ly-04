@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Piece - Chi tiết truyện</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- AOS Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/layout.css">
+
+    <style>
+        /* Custom Patterns */
+        .pattern-dots {
+            background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .pattern-grid {
+            background-image:
+                linear-gradient(rgba(156, 163, 175, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(156, 163, 175, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Hero Section */
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .hero-overlay {
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn.liked {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .action-btn.bookmarked {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        /* Rating Stars */
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .star {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.5rem;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .star.active {
+            color: #fbbf24;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Chapter List */
+        .chapter-item {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .chapter-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+            border-left-color: #3b82f6;
+            transform: translateX(4px);
+        }
+
+        .chapter-item.read {
+            background: rgba(34, 197, 94, 0.05);
+            border-left-color: #22c55e;
+        }
+
+        .chapter-item.current {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            border-left-width: 6px;
+        }
+
+        /* Comment System */
+        .comment-item {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .comment-item:hover {
+            background: rgba(0, 0, 0, 0.02);
+            border-left-color: #3b82f6;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comment-reply {
+            margin-left: 50px;
+            border-left: 2px solid #e5e7eb;
+            padding-left: 16px;
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+
+        /* Popular Manga Card */
+        .popular-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popular-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .popular-card:hover::before {
+            left: 100%;
+        }
+
+        .popular-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Floating Elements */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Pulse Animation */
+        .pulse-custom {
+            animation: pulse-custom 2s infinite;
+        }
+
+        @keyframes pulse-custom {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Tab Styles */
+        .tab-active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .action-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 pattern-dots overflow-x-hidden">
+     <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col gap-2 md:flex-row items-center justify-between h-fit">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="logo flex items-center">
+                        <div class="logo-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <span>MangaVerse</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="desktop-nav hidden lg:flex items-center space-x-1">
+                    <div class="nav-item relative">
+                        <a href="index.html" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            Trang chủ
+                        </a>
+                    </div>
+
+                    <div class="nav-item relative">
+                        <a href="category.html" class="nav-link">
+                            <i class="fas fa-list"></i>
+                            Thể loại
+                        </a>
+                        <div class="mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-fire mr-2"></i>Phổ biến</h4>
+                                    <a href="category.html" class="mega-menu-link">Action</a>
+                                    <a href="category.html" class="mega-menu-link">Romance</a>
+                                    <a href="category.html" class="mega-menu-link">Comedy</a>
+                                    <a href="category.html" class="mega-menu-link">Drama</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-star mr-2"></i>Đặc sắc</h4>
+                                    <a href="category.html" class="mega-menu-link">Fantasy</a>
+                                    <a href="category.html" class="mega-menu-link">Sci-Fi</a>
+                                    <a href="category.html" class="mega-menu-link">Horror</a>
+                                    <a href="category.html" class="mega-menu-link">Mystery</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-globe mr-2"></i>Theo quốc gia</h4>
+                                    <a href="category.html" class="mega-menu-link">🇯🇵 Manga</a>
+                                    <a href="category.html" class="mega-menu-link">🇰🇷 Manhwa</a>
+                                    <a href="category.html" class="mega-menu-link">🇨🇳 Manhua</a>
+                                    <a href="category.html" class="mega-menu-link">🇻🇳 Truyện Việt</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        Mới cập nhật
+                    </a>
+
+                </nav>
+
+                <!-- Search Bar -->
+                <div class="search-container hidden lg:block">
+                    <input type="text" class="search-input" placeholder="Tìm truyện, tác giả..." id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>One Piece</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>Naruto</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-user"></i>
+                            <span>Oda Eiichiro</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-2">
+                    <!-- Theme Toggle -->
+                    <button class="action-btn" onclick="toggleTheme()" title="Chuyển đổi chế độ">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Bookmarks -->
+                    <button class="action-btn" onclick="toggleBookmarks()" title="Bookmark">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="action-btn" onclick="toggleNotifications()" title="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <span>U</span>
+                        </div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-header">
+                                <h4>User Name</h4>
+                                <p>Thành viên VIP</p>
+                            </div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Hồ sơ
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-history"></i>
+                                Lịch sử đọc
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-heart"></i>
+                                Yêu thích
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-download"></i>
+                                Đã tải xuống
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Cài đặt
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn lg:hidden" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars" id="mobileMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="flex justify-between items-center mb-8">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span>MangaVerse</span>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="search-container mb-6">
+                <input type="text" class="search-input" placeholder="Tìm truyện, tác giả...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav>
+                <a href="index.html" class="mobile-nav-link">
+                    <i class="fas fa-home"></i>
+                    Trang chủ
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-list"></i>
+                    Thể loại
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-clock"></i>
+                    Mới cập nhật
+                </a>
+            </nav>
+
+            <!-- Mobile User Actions -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-user"></i>
+                    Hồ sơ
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-bookmark"></i>
+                    Bookmark
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-history"></i>
+                    Lịch sử đọc
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-cog"></i>
+                    Cài đặt
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-12 mt-20" data-aos="fade-up">
+        <div class="hero-overlay absolute inset-0"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="hero-content flex flex-col lg:flex-row items-center lg:items-start gap-8">
+                <!-- Poster -->
+                <div class="flex-shrink-0" data-aos="zoom-in">
+                    <div class="relative">
+                        <img src="images/truyen1.jpg" alt="One Piece Poster"
+                            class="w-64 aspect-[3/4] object-cover rounded-2xl shadow-2xl">
+                        <div
+                            class="absolute top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold">
+                            <i class="fas fa-star mr-1"></i>9.8
+                        </div>
+                        <div
+                            class="absolute bottom-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                            <i class="fas fa-play mr-1"></i>Đang cập nhật
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1" data-aos="fade-left">
+                    <div class="mb-4">
+                        <h1 class="text-4xl lg:text-5xl font-bold mb-2 floating">One Piece</h1>
+                        <p class="text-xl opacity-90 mb-4">ワンピース</p>
+                        <div class="flex flex-wrap items-center gap-4 text-sm">
+                            <span class="bg-white/20 px-3 py-1 rounded-full">
+                                <i class="fas fa-user mr-1"></i>
+                                Eiichiro Oda
+                            </span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full">
+                                <i class="fas fa-calendar mr-1"></i>
+                                1997 - Hiện tại
+                            </span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full">
+                                <i class="fas fa-book mr-1"></i>
+                                1095 Chương
+                            </span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full">
+                                <i class="fas fa-eye mr-1"></i>
+                                2.5M lượt xem
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Genres -->
+                    <div class="mb-6">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Shonen</span>
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">Action</span>
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm">Adventure</span>
+                            <span class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm">Comedy</span>
+                            <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">Drama</span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <p class="text-lg leading-relaxed opacity-90">
+                            Monkey D. Luffy, một cậu bé có khả năng co giãn như cao su sau khi vô tình ăn phải Trái Ác
+                            Quỷ.
+                            Luffy khám phá Grand Line cùng với băng hải tặc Mũ Rơm của mình để tìm kiếm kho báu huyền
+                            thoại
+                            được gọi là "One Piece" và trở thành Vua Hải Tặc tiếp theo.
+                        </p>
+                    </div>
+
+                    <!-- Reading Progress -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm opacity-80">Tiến độ đọc</span>
+                            <span class="text-sm font-semibold">847/1095 (77%)</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 77%"></div>
+                        </div>
+                        <p class="text-xs opacity-70 mt-1">Chương cuối đọc: 847 - "Luffy và Katakuri"</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons flex flex-wrap gap-4">
+                        <a href="watch.html">
+                            <button
+                                class="action-btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+                                <i class="fas fa-play mr-2"></i>
+                                Đọc từ đầu
+                            </button>
+                        </a>
+
+                        <a href="watch.html">
+                            <button
+                                class="action-btn bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+                                <i class="fas fa-bookmark mr-2"></i>
+                                Đọc tiếp
+                            </button>
+                        </a>
+                        <a href="watch.html">
+                            <button
+                                class="action-btn bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+                                <i class="fas fa-fast-forward mr-2"></i>
+                                Chương mới nhất
+                            </button>
+                        </a>
+                    
+                        <button
+                            class="action-btn bg-white/20 hover:bg-white/30 text-white px-4 py-3 rounded-xl flex items-center liked"
+                            data-liked="true">
+                            <i class="fas fa-heart mr-2"></i>
+                            15.2K
+                        </button>
+                        <button
+                            class="action-btn bg-white/20 hover:bg-white/30 text-white px-4 py-3 rounded-xl flex items-center bookmarked"
+                            data-bookmarked="true">
+                            <i class="fas fa-bookmark mr-2"></i>
+                            Đã lưu
+                        </button>
+                        <button
+                            class="action-btn bg-white/20 hover:bg-white/30 text-white px-4 py-3 rounded-xl flex items-center">
+                            <i class="fas fa-share-alt mr-2"></i>
+                            Chia sẻ
+                        </button>
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="mt-6">
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm opacity-80">Đánh giá của bạn:</span>
+                            <div class="rating-container" id="user-rating">
+                                <i class="star fas fa-star" data-rating="1"></i>
+                                <i class="star fas fa-star" data-rating="2"></i>
+                                <i class="star fas fa-star" data-rating="3"></i>
+                                <i class="star fas fa-star" data-rating="4"></i>
+                                <i class="star fas fa-star" data-rating="5"></i>
+                            </div>
+                            <span class="text-sm opacity-80" id="rating-text">Chưa đánh giá</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 overflow-x-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Tabs -->
+                <div class="bg-white rounded-2xl shadow-lg p-6" data-aos="fade-up">
+                    <div class="flex space-x-4 mb-6 border-b">
+                        <button
+                            class="tab-btn tab-active px-6 py-3 rounded-t-lg font-semibold transition-all duration-300"
+                            data-tab="chapters">
+                            <i class="fas fa-list mr-2"></i>
+                            Danh sách chương
+                        </button>
+                        <button
+                            class="tab-btn px-6 py-3 rounded-t-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all duration-300"
+                            data-tab="comments">
+                            <i class="fas fa-comments mr-2"></i>
+                            Bình luận (1,234)
+                        </button>
+                        <button
+                            class="tab-btn px-6 py-3 rounded-t-lg font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all duration-300"
+                            data-tab="info">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Thông tin
+                        </button>
+                    </div>
+
+                    <!-- Chapters Tab -->
+                    <div id="chapters-content" class="tab-content">
+                        <!-- Search Box -->
+                        <div class="search-box mb-6">
+                            <div class="relative">
+                                <input type="text" id="chapter-search" placeholder="Tìm kiếm chương..."
+                                    class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <i
+                                    class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <!-- Chapter Stats -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-blue-600">1,095</div>
+                                <div class="text-sm text-gray-600">Tổng chương</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-green-600">847</div>
+                                <div class="text-sm text-gray-600">Đã đọc</div>
+                            </div>
+                            <div class="bg-orange-50 p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-orange-600">248</div>
+                                <div class="text-sm text-gray-600">Chưa đọc</div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-xl text-center">
+                                <div class="text-2xl font-bold text-purple-600">77%</div>
+                                <div class="text-sm text-gray-600">Hoàn thành</div>
+                            </div>
+                        </div>
+
+                        <!-- Chapter List -->
+                        <div class="space-y-2 max-h-96 overflow-x-hidden custom-scrollbar " id="chapter-list">
+                            <!-- Recent chapters -->
+                            <div class="chapter-item p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer"
+                                data-chapter="1095">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <span class="font-bold text-blue-600">1095</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Chương 1095: Thế giới mà chúng ta mong muốn</h4>
+                                            <p class="text-sm text-gray-500">Cập nhật 2 giờ trước • 18 trang</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span
+                                            class="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-semibold">Mới</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chapter-item p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer"
+                                data-chapter="1094">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <span class="font-bold text-blue-600">1094</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Chương 1094: Jay Garcia Saturn</h4>
+                                            <p class="text-sm text-gray-500">Cập nhật 1 tuần trước • 17 trang</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Current reading chapter -->
+                            <div class="chapter-item current p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer"
+                                data-chapter="847">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                            <span class="font-bold text-white">847</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Chương 847: Luffy và Katakuri</h4>
+                                            <p class="text-sm text-gray-500">Đang đọc • 19 trang</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span
+                                            class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">Đang
+                                            đọc</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Read chapters -->
+                            <div class="chapter-item read p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer"
+                                data-chapter="846">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <span class="font-bold text-green-600">846</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Chương 846: Tamago Security</h4>
+                                            <p class="text-sm text-gray-500">Đã đọc • 17 trang</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-check text-green-500"></i>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- More chapters... -->
+                            <div class="chapter-item read p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer"
+                                data-chapter="845">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <span class="font-bold text-green-600">845</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold">Chương 845: Lola và Chiffon</h4>
+                                            <p class="text-sm text-gray-500">Đã đọc • 19 trang</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-check text-green-500"></i>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Load More Button -->
+                        <div class="text-center mt-6">
+                            <button id="load-more-chapters"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold transition-all">
+                                <i class="fas fa-plus mr-2"></i>
+                                Xem thêm chương
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Comments Tab -->
+                    <div id="comments-content" class="tab-content hidden">
+                        <!-- Comment Form -->
+                        <div class="bg-gray-50 p-6 rounded-xl mb-6">
+                            <h4 class="font-semibold mb-4">Viết bình luận</h4>
+                            <div class="flex space-x-4">
+                                <div class="comment-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <textarea placeholder="Chia sẻ cảm nghĩ của bạn về truyện..."
+                                        class="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        rows="3"></textarea>
+                                    <div class="flex justify-between items-center mt-3">
+                                        <div class="flex items-center space-x-4">
+                                            <button class="text-gray-500 hover:text-blue-500 transition-colors">
+                                                <i class="fas fa-image mr-1"></i>Ảnh
+                                            </button>
+                                            <button class="text-gray-500 hover:text-blue-500 transition-colors">
+                                                <i class="fas fa-smile mr-1"></i>Emoji
+                                            </button>
+                                        </div>
+                                        <button
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                                            Đăng bình luận
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comments List -->
+                        <div class="space-y-6" id="comments-list">
+                            <!-- Comment 1 -->
+                            <div class="comment-item p-4 rounded-xl">
+                                <div class="flex space-x-4">
+                                    <div class="comment-avatar">
+                                        MN
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <h5 class="font-semibold">MangaNinja</h5>
+                                            <span class="text-xs text-gray-500">2 giờ trước</span>
+                                            <span
+                                                class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">VIP</span>
+                                        </div>
+                                        <p class="text-gray-700 mb-3">
+                                            Chương mới quá hay! Cuối cùng thì Luffy cũng đã thức tỉnh được Gear 5.
+                                            Oda sensei thật sự là thiên tài, cách xây dựng nhân vật và cốt truyện quá
+                                            xuất sắc! 🔥
+                                        </p>
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <button
+                                                class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                <i class="fas fa-thumbs-up mr-1"></i>
+                                                <span>234</span>
+                                            </button>
+                                            <button
+                                                class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                <i class="fas fa-reply mr-1"></i>
+                                                Trả lời
+                                            </button>
+                                            <button class="text-gray-500 hover:text-red-500 transition-colors">
+                                                <i class="fas fa-flag mr-1"></i>
+                                                Báo cáo
+                                            </button>
+                                        </div>
+
+                                        <!-- Replies -->
+                                        <div class="comment-reply mt-4 space-y-4">
+                                            <div class="flex space-x-3">
+                                                <div class="comment-avatar"
+                                                    style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                                    OP
+                                                </div>
+                                                <div class="flex-1">
+                                                    <div class="flex items-center space-x-2 mb-1">
+                                                        <h6 class="font-medium text-sm">OnePieceFan</h6>
+                                                        <span class="text-xs text-gray-500">1 giờ trước</span>
+                                                    </div>
+                                                    <p class="text-sm text-gray-700 mb-2">
+                                                        Đồng ý! Gear 5 thật sự là một bước ngoặt lớn trong series.
+                                                        Không thể chờ đợi để xem Luffy sử dụng sức mạnh này như thế nào!
+                                                    </p>
+                                                    <div class="flex items-center space-x-3 text-xs">
+                                                        <button
+                                                            class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                            <i class="fas fa-thumbs-up mr-1"></i>
+                                                            <span>45</span>
+                                                        </button>
+                                                        <button
+                                                            class="text-gray-500 hover:text-blue-500 transition-colors">
+                                                            Trả lời
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comment 2 -->
+                            <div class="comment-item p-4 rounded-xl">
+                                <div class="flex space-x-4">
+                                    <div class="comment-avatar">
+                                        AL
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <h5 class="font-semibold">AnimeLover</h5>
+                                            <span class="text-xs text-gray-500">5 giờ trước</span>
+                                        </div>
+                                        <p class="text-gray-700 mb-3">
+                                            Đã theo dõi One Piece từ năm 2000 và vẫn cảm thấy hứng thú như ngày đầu.
+                                            Oda thật sự biết cách giữ chân độc giả! 👏
+                                        </p>
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <button
+                                                class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                <i class="fas fa-thumbs-up mr-1"></i>
+                                                <span>156</span>
+                                            </button>
+                                            <button
+                                                class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                <i class="fas fa-reply mr-1"></i>
+                                                Trả lời
+                                            </button>
+                                            <button class="text-gray-500 hover:text-red-500 transition-colors">
+                                                <i class="fas fa-flag mr-1"></i>
+                                                Báo cáo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Comment 3 -->
+                            <div class="comment-item p-4 rounded-xl">
+                                <div class="flex space-x-4">
+                                    <div class="comment-avatar">
+                                        MT
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <h5 class="font-semibold">MangaTracker</h5>
+                                            <span class="text-xs text-gray-500">1 ngày trước</span>
+                                        </div>
+                                        <p class="text-gray-700 mb-3">
+                                            Ai còn nhớ arc Marineford không? Đó là lúc tôi bắt đầu khóc khi đọc manga 😭
+                                            One Piece không chỉ là truyện tranh, mà là cả một hành trình cảm xúc!
+                                        </p>
+                                        <div class="flex items-center space-x-4 text-sm">
+                                            <button
+                                                class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                <i class="fas fa-thumbs-up mr-1"></i>
+                                                <span>89</span>
+                                            </button>
+                                            <button
+                                                class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                                <i class="fas fa-reply mr-1"></i>
+                                                Trả lời
+                                            </button>
+                                            <button class="text-gray-500 hover:text-red-500 transition-colors">
+                                                <i class="fas fa-flag mr-1"></i>
+                                                Báo cáo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Load More Comments -->
+                        <div class="text-center mt-6">
+                            <button id="load-more-comments"
+                                class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-xl font-semibold transition-all">
+                                <i class="fas fa-plus mr-2"></i>
+                                Xem thêm bình luận
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Info Tab -->
+                    <div id="info-content" class="tab-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Basic Info -->
+                            <div class="space-y-4">
+                                <h4 class="font-bold text-lg mb-4">Thông tin cơ bản</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Tên gốc:</span>
+                                        <span class="font-semibold">ワンピース</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Tác giả:</span>
+                                        <span class="font-semibold">Eiichiro Oda</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Nhà xuất bản:</span>
+                                        <span class="font-semibold">Shueisha</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Tạp chí:</span>
+                                        <span class="font-semibold">Weekly Shōnen Jump</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Năm phát hành:</span>
+                                        <span class="font-semibold">1997 - Hiện tại</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Số tập:</span>
+                                        <span class="font-semibold">107 tập</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Số chương:</span>
+                                        <span class="font-semibold">1,095 chương</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Trạng thái:</span>
+                                        <span class="font-semibold text-green-600">Đang cập nhật</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="space-y-4">
+                                <h4 class="font-bold text-lg mb-4">Thống kê</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Lượt xem:</span>
+                                        <span class="font-semibold">2,547,892</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Lượt thích:</span>
+                                        <span class="font-semibold">15,234</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Lượt lưu:</span>
+                                        <span class="font-semibold">8,567</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Bình luận:</span>
+                                        <span class="font-semibold">1,234</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Đánh giá:</span>
+                                        <span class="font-semibold">9.8/10 (2,456 votes)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Xếp hạng:</span>
+                                        <span class="font-semibold">#1 trong Shonen</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full Description -->
+                        <div class="mt-8">
+                            <h4 class="font-bold text-lg mb-4">Mô tả chi tiết</h4>
+                            <div class="prose max-w-none">
+                                <p class="mb-4">
+                                    One Piece là một series manga Nhật Bản được viết và minh họa bởi Eiichiro Oda.
+                                    Nó đã được đăng tuần tự trong tạp chí Weekly Shōnen Jump của Shueisha từ ngày 22
+                                    tháng 7 năm 1997,
+                                    với các chương của nó được tập hợp thành 107 tập tankōbon tính đến tháng 11 năm
+                                    2023.
+                                </p>
+                                <p class="mb-4">
+                                    Câu chuyện kể về cuộc phiêu lưu của Monkey D. Luffy, một cậu bé có thân thể co giãn
+                                    được
+                                    sau khi vô tình ăn phải Trái Ác Quỷ. Cùng với băng hải tặc đa dạng của mình, được
+                                    đặt tên là
+                                    Băng hải tặc Mũ Rơm, Luffy khám phá Grand Line để tìm kiếm kho báu huyền thoại của
+                                    thế giới
+                                    được gọi là "One Piece" để trở thành Vua Hải Tặc tiếp theo.
+                                </p>
+                                <p class="mb-4">
+                                    One Piece đã nhận được lời khen ngợi từ giới phê bình, chủ yếu vì nghệ thuật,
+                                    cách kể chuyện và sự hài hước của nó. Một số nhà phê bình manga đã ca ngợi Oda vì
+                                    khả năng truyền tải cảm xúc và tạo ra một thế giới phong phú với một dàn nhân vật đa
+                                    dạng.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog/Articles Section -->
+                <section class="mt-12 mb-12" data-aos="fade-up">
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-2xl font-bold gradient-text flex items-center">
+                                <i class="fas fa-newspaper mr-3 text-blue-500"></i>
+                                Bài Viết / Blog Về Truyện
+                            </h2>
+                            <a href="#"
+                                class="text-blue-600 hover:text-blue-800 transition-colors text-sm font-semibold flex items-center">
+                                Xem tất cả
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Blog Post 1 -->
+                            <div class="blog-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                data-aos="fade-up" data-aos-delay="100">
+                                <div class="relative">
+                                    <img src="images/truyen1.jpg" alt="Phân tích Gear 5"
+                                        class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                        Phân tích
+                                    </div>
+                                </div>
+                                <div class="p-5">
+                                    <h3
+                                        class="font-bold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                        <a href="#">Phân tích chi tiết về Gear 5 và sức mạnh thức tỉnh của Luffy</a>
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                        Gear 5 là hình thái mạnh nhất của Luffy cho đến nay, được thức tỉnh sau trận
+                                        chiến với Kaido.
+                                        Bài viết này sẽ đi sâu vào phân tích nguồn gốc và ý nghĩa của sức mạnh này...
+                                    </p>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-xs">
+                                                OP
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-semibold">OnePieceScholar</p>
+                                                <p class="text-xs text-gray-500">15/05/2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                            <span><i class="fas fa-eye mr-1"></i>1.2K</span>
+                                            <span><i class="fas fa-comment mr-1"></i>45</span>
+                                        </div>
+                                    </div>
+                                    <a href="#"
+                                        class="inline-block text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                        Đọc tiếp <i class="fas fa-long-arrow-alt-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Blog Post 2 -->
+                            <div class="blog-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                data-aos="fade-up" data-aos-delay="200">
+                                <div class="relative">
+                                    <img src="images/truyen1.jpg" alt="Lịch sử One Piece"
+                                        class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                        Lịch sử
+                                    </div>
+                                </div>
+                                <div class="p-5">
+                                    <h3
+                                        class="font-bold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                        <a href="#">25 năm One Piece: Hành trình của Eiichiro Oda và tác phẩm để đời</a>
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                        Nhìn lại 25 năm hành trình sáng tạo One Piece của Eiichiro Oda, từ những ngày
+                                        đầu khó khăn
+                                        đến khi trở thành manga bán chạy nhất mọi thời đại với hơn 500 triệu bản...
+                                    </p>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-semibold text-xs">
+                                                MH
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-semibold">MangaHistorian</p>
+                                                <p class="text-xs text-gray-500">02/04/2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                            <span><i class="fas fa-eye mr-1"></i>3.5K</span>
+                                            <span><i class="fas fa-comment mr-1"></i>87</span>
+                                        </div>
+                                    </div>
+                                    <a href="#"
+                                        class="inline-block text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                        Đọc tiếp <i class="fas fa-long-arrow-alt-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Blog Post 3 -->
+                            <div class="blog-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                data-aos="fade-up" data-aos-delay="300">
+                                <div class="relative">
+                                    <img src="images/truyen1.jpg" alt="Dự đoán One Piece"
+                                        class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                        Dự đoán
+                                    </div>
+                                </div>
+                                <div class="p-5">
+                                    <h3
+                                        class="font-bold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                        <a href="#">5 dự đoán về kết thúc của One Piece và bí mật của kho báu</a>
+                                    </h3>
+                                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                        Khi One Piece đang tiến gần đến hồi kết, nhiều giả thuyết về kho báu huyền thoại
+                                        và
+                                        số phận của Luffy đã được đưa ra. Bài viết này tổng hợp 5 dự đoán thuyết phục
+                                        nhất...
+                                    </p>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center space-x-2">
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-xs">
+                                                PT
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-semibold">PirateTheories</p>
+                                                <p class="text-xs text-gray-500">28/05/2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                            <span><i class="fas fa-eye mr-1"></i>5.8K</span>
+                                            <span><i class="fas fa-comment mr-1"></i>156</span>
+                                        </div>
+                                    </div>
+                                    <a href="#"
+                                        class="inline-block text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                        Đọc tiếp <i class="fas fa-long-arrow-alt-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Featured Article -->
+                        <div class="mt-8 rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                            data-aos="fade-up">
+                            <div class="flex flex-col md:flex-row">
+                                <div class="md:w-1/3 relative">
+                                    <img src="images/truyen1.jpg" alt="Phỏng vấn Eiichiro Oda"
+                                        class="w-full h-full object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                        Đặc biệt
+                                    </div>
+                                </div>
+                                <div class="md:w-2/3 p-6">
+                                    <div class="flex items-center space-x-2 mb-3">
+                                        <span
+                                            class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Phỏng
+                                            vấn</span>
+                                        <span
+                                            class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Độc
+                                            quyền</span>
+                                    </div>
+                                    <h3
+                                        class="font-bold text-xl md:text-2xl mb-3 hover:text-blue-600 transition-colors">
+                                        <a href="#">Phỏng vấn độc quyền: Eiichiro Oda tiết lộ về hành trình sáng tạo One
+                                            Piece</a>
+                                    </h3>
+                                    <p class="text-gray-600 mb-4 line-clamp-3">
+                                        Trong cuộc phỏng vấn hiếm hoi này, Eiichiro Oda chia sẻ về nguồn cảm hứng, quá
+                                        trình sáng tạo và
+                                        những thách thức khi vẽ One Piece trong suốt 25 năm qua. Ông cũng tiết lộ một số
+                                        thông tin thú vị
+                                        về cách phát triển nhân vật và kế hoạch cho hồi kết của series...
+                                    </p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-semibold text-xs">
+                                                JM
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold">JumpMagazine</p>
+                                                <p class="text-xs text-gray-500">10/06/2023 • 15 phút đọc</p>
+                                            </div>
+                                        </div>
+                                        <a href="#"
+                                            class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
+                                            Đọc bài viết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Articles -->
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 flex items-center">
+                                <i class="fas fa-video mr-2 text-red-500"></i>
+                                Video Phân Tích
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                    data-aos="fade-up" data-aos-delay="100">
+                                    <div class="relative">
+                                        <img src="images/truyen1.jpg" alt="Video phân tích"
+                                            class="w-full h-36 object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                                <i class="fas fa-play text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                            12:45
+                                        </div>
+                                    </div>
+                                    <div class="p-3">
+                                        <h4 class="font-semibold text-sm line-clamp-2 mb-1">Phân tích chi tiết về Haki
+                                            và các loại Haki trong One Piece</h4>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>OnePieceTheory</span>
+                                            <span>15K lượt xem</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                    data-aos="fade-up" data-aos-delay="200">
+                                    <div class="relative">
+                                        <img src="images/truyen1.jpg" alt="Video phân tích"
+                                            class="w-full h-36 object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                                <i class="fas fa-play text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                            18:32
+                                        </div>
+                                    </div>
+                                    <div class="p-3">
+                                        <h4 class="font-semibold text-sm line-clamp-2 mb-1">Lịch sử của Void Century và
+                                            bí mật của Poneglyph</h4>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>MangaExplained</span>
+                                            <span>23K lượt xem</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                    data-aos="fade-up" data-aos-delay="300">
+                                    <div class="relative">
+                                        <img src="images/truyen1.jpg" alt="Video phân tích"
+                                            class="w-full h-36 object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                                <i class="fas fa-play text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                            21:15
+                                        </div>
+                                    </div>
+                                    <div class="p-3">
+                                        <h4 class="font-semibold text-sm line-clamp-2 mb-1">Phân tích nhân vật: Sự phát
+                                            triển của Roronoa Zoro</h4>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>AnimeDeep</span>
+                                            <span>19K lượt xem</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                                    data-aos="fade-up" data-aos-delay="400">
+                                    <div class="relative">
+                                        <img src="images/truyen1.jpg" alt="Video phân tích"
+                                            class="w-full h-36 object-cover">
+                                        <div
+                                            class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                                <i class="fas fa-play text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                            15:48
+                                        </div>
+                                    </div>
+                                    <div class="p-3">
+                                        <h4 class="font-semibold text-sm line-clamp-2 mb-1">Top 10 trận chiến hay nhất
+                                            trong One Piece</h4>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span>TopManga</span>
+                                            <span>32K lượt xem</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Community Discussions -->
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold mb-4 flex items-center">
+                                <i class="fas fa-users mr-2 text-green-500"></i>
+                                Thảo Luận Cộng Đồng
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="discussion-card p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                                    data-aos="fade-up">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-xs">
+                                                LF
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <h4
+                                                    class="font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                                    <a href="#">Thảo luận: Ai sẽ là thành viên cuối cùng của băng Mũ
+                                                        Rơm?</a>
+                                                </h4>
+                                                <span
+                                                    class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs font-semibold">Hot</span>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                                                Với việc One Piece đang tiến gần đến hồi kết, nhiều người cho rằng sẽ có
+                                                thêm một thành viên cuối cùng
+                                                gia nhập băng Mũ Rơm. Các ứng cử viên tiềm năng là Yamato, Carrot, hoặc
+                                                thậm chí là...
+                                            </p>
+                                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                                <div class="flex items-center space-x-4">
+                                                    <span>Bởi LuffyFan123</span>
+                                                    <span>2 ngày trước</span>
+                                                </div>
+                                                <div class="flex items-center space-x-4">
+                                                    <span><i class="fas fa-comment mr-1"></i>156 bình luận</span>
+                                                    <span><i class="fas fa-heart mr-1"></i>45 thích</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="discussion-card p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                                    data-aos="fade-up">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-semibold text-xs">
+                                                ZF
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <h4
+                                                    class="font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                                    <a href="#">Dự đoán: Sức mạnh thật sự của thanh kiếm Enma</a>
+                                                </h4>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                                                Sau khi Zoro làm chủ được Enma, nhiều người cho rằng thanh kiếm này còn
+                                                ẩn chứa nhiều bí mật và sức mạnh
+                                                chưa được khai phá. Liệu nó có liên quan đến Ryuma và Wano như thế nào?
+                                            </p>
+                                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                                <div class="flex items-center space-x-4">
+                                                    <span>Bởi ZoroFanboy</span>
+                                                    <span>3 ngày trước</span>
+                                                </div>
+                                                <div class="flex items-center space-x-4">
+                                                    <span><i class="fas fa-comment mr-1"></i>89 bình luận</span>
+                                                    <span><i class="fas fa-heart mr-1"></i>32 thích</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="discussion-card p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                                    data-aos="fade-up">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-xs">
+                                                RL
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <h4
+                                                    class="font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                                    <a href="#">Thảo luận: Bí mật về D. và mối liên hệ với Ancient
+                                                        Kingdom</a>
+                                                </h4>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                                                Chữ D. trong tên của nhiều nhân vật quan trọng như Monkey D. Luffy, Gol
+                                                D. Roger, Marshall D. Teach...
+                                                có ý nghĩa gì? Liệu nó có liên quan đến Ancient Kingdom và Void Century
+                                                không?
+                                            </p>
+                                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                                <div class="flex items-center space-x-4">
+                                                    <span>Bởi RogerLegacy</span>
+                                                    <span>5 ngày trước</span>
+                                                </div>
+                                                <div class="flex items-center space-x-4">
+                                                    <span><i class="fas fa-comment mr-1"></i>124 bình luận</span>
+                                                    <span><i class="fas fa-heart mr-1"></i>67 thích</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-6">
+                                <a href="#"
+                                    class="inline-block px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-semibold transition-colors">
+                                    <i class="fas fa-comments mr-2"></i>
+                                    Xem tất cả thảo luận
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-8">
+                <!-- Popular Manga -->
+                <div class="bg-white rounded-2xl shadow-lg p-6" data-aos="fade-left">
+                    <h3 class="text-xl font-bold mb-6 gradient-text">
+                        <i class="fas fa-fire mr-2"></i>
+                        Truyện phổ biến
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="Naruto"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">Naruto</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Chương 700</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-xs text-yellow-500">
+                                            <i class="fas fa-star mr-1"></i>
+                                            <span>9.5</span>
+                                        </div>
+                                        <span class="text-xs text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>1.8M
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="Dragon Ball"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">Dragon Ball</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Chương 519</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-xs text-yellow-500">
+                                            <i class="fas fa-star mr-1"></i>
+                                            <span>9.7</span>
+                                        </div>
+                                        <span class="text-xs text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>2.1M
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="Attack on Titan"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">Attack on Titan</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Chương 139</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-xs text-yellow-500">
+                                            <i class="fas fa-star mr-1"></i>
+                                            <span>9.3</span>
+                                        </div>
+                                        <span class="text-xs text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>1.5M
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="Demon Slayer"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">Demon Slayer</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Chương 205</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-xs text-yellow-500">
+                                            <i class="fas fa-star mr-1"></i>
+                                            <span>9.6</span>
+                                        </div>
+                                        <span class="text-xs text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>1.9M
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="My Hero Academia"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">My Hero Academia</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Chương 403</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center text-xs text-yellow-500">
+                                            <i class="fas fa-star mr-1"></i>
+                                            <span>9.4</span>
+                                        </div>
+                                        <span class="text-xs text-gray-500">
+                                            <i class="fas fa-eye mr-1"></i>1.3M
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-2xl shadow-lg p-6" data-aos="fade-left" data-aos-delay="100">
+                    <h3 class="text-xl font-bold mb-6 gradient-text">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Thống kê nhanh
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-eye text-blue-500 mr-3"></i>
+                                <span class="text-sm">Lượt xem hôm nay</span>
+                            </div>
+                            <span class="font-bold text-blue-600">+12,456</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-heart text-green-500 mr-3"></i>
+                                <span class="text-sm">Lượt thích tuần này</span>
+                            </div>
+                            <span class="font-bold text-green-600">+1,234</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-bookmark text-orange-500 mr-3"></i>
+                                <span class="text-sm">Lượt lưu tháng này</span>
+                            </div>
+                            <span class="font-bold text-orange-600">+567</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-comments text-purple-500 mr-3"></i>
+                                <span class="text-sm">Bình luận mới</span>
+                            </div>
+                            <span class="font-bold text-purple-600">+89</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Manga -->
+                <div class="bg-white rounded-2xl shadow-lg p-6" data-aos="fade-left" data-aos-delay="200">
+                    <h3 class="text-xl font-bold mb-6 gradient-text">
+                        <i class="fas fa-link mr-2"></i>
+                        Truyện liên quan
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="One Piece Film Red"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">One Piece Film Red</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Light Novel</p>
+                                    <div class="flex items-center text-xs text-yellow-500">
+                                        <i class="fas fa-star mr-1"></i>
+                                        <span>9.2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="popular-card p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer">
+                            <div class="flex space-x-3">
+                                <img src="images/truyen1.jpg" alt="One Piece Databook"
+                                    class="w-16 aspect-[3/4] object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold mb-1">One Piece Databook</h4>
+                                    <p class="text-sm text-gray-500 mb-2">Guidebook</p>
+                                    <div class="flex items-center text-xs text-yellow-500">
+                                        <i class="fas fa-star mr-1"></i>
+                                        <span>8.9</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="container mx-auto px-4 py-16">
+                <!-- Stats Section -->
+                <div class="stats-grid mb-12">
+                    <div class="stat-card">
+                        <div class="stat-number">15,000+</div>
+                        <div class="stat-label">Bộ truyện</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500K+</div>
+                        <div class="stat-label">Chapter</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2M+</div>
+                        <div class="stat-label">Người dùng</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Cập nhật/ngày</div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Company Info -->
+                    <div class="footer-section">
+                        <div class="flex items-center mb-6">
+                            <div class="logo-icon mr-3">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <span class="text-2xl font-bold">MangaVerse</span>
+                        </div>
+                        <p class="text-gray-300 mb-6 leading-relaxed">
+                            Nền tảng đọc truyện tranh hàng đầu với thư viện khổng lồ và trải nghiệm đọc tuyệt vời.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Discord">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                            <a href="#" class="social-link" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-link"></i>
+                            Liên kết nhanh
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-home"></i>
+                                Trang chủ
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fire"></i>
+                                Truyện hot
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-star"></i>
+                                Xếp hạng
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-clock"></i>
+                                Mới cập nhật
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-random"></i>
+                                Ngẫu nhiên
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-info-circle"></i>
+                                Về chúng tôi
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-tags"></i>
+                            Thể loại phổ biến
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fist-raised"></i>
+                                Action
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-heart"></i>
+                                Romance
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-laugh"></i>
+                                Comedy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-magic"></i>
+                                Fantasy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-ghost"></i>
+                                Horror
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-graduation-cap"></i>
+                                School Life
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Recent Updates -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Cập nhật gần đây
+                        </h3>
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen1.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>One Piece</h4>
+                                    <p>Chapter 1095 • 2 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen2.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>Naruto</h4>
+                                    <p>Chapter 995 • 1 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen7.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>Dragon Ball</h4>
+                                    <p>Chapter 2153 • 3 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Newsletter -->
+                        <div class="mt-6">
+                            <h4 class="text-white font-semibold mb-3">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Đăng ký nhận tin
+                            </h4>
+                            <p class="text-gray-300 mb-4 text-sm">
+                                Nhận thông báo chapter mới và tin tức manga mới nhất.
+                            </p>
+                            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                                <input type="email" class="newsletter-input" placeholder="Email của bạn..." required>
+                                <button type="submit" class="newsletter-btn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Đăng ký
+                                    </span>
+                                    <span class="loading hidden">
+                                        <div class="loading"></div>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p>&copy; 2024 MangaVerse. Tất cả quyền được bảo lưu.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Chính sách bảo mật</a>
+                            <a href="#">Điều khoản sử dụng</a>
+                            <a href="#">DMCA</a>
+                            <a href="#">Liên hệ</a>
+                            <a href="#">API</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+   <script src="js/layout.js"></script>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.getAttribute('data-tab');
+
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                    });
+
+                    // Add active class to clicked button
+                    button.classList.add('tab-active');
+                    button.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+
+                    // Show target tab content
+                    document.getElementById(targetTab + '-content').classList.remove('hidden');
+                });
+            });
+
+            // Rating system
+            const stars = document.querySelectorAll('.star');
+            const ratingText = document.getElementById('rating-text');
+            let currentRating = 0;
+
+            stars.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    currentRating = index + 1;
+                    updateStars();
+                    ratingText.textContent = `Bạn đã đánh giá ${currentRating}/5 sao`;
+                });
+
+                star.addEventListener('mouseenter', () => {
+                    highlightStars(index + 1);
+                });
+            });
+
+            document.getElementById('user-rating').addEventListener('mouseleave', () => {
+                updateStars();
+            });
+
+            function highlightStars(rating) {
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+
+            function updateStars() {
+                highlightStars(currentRating);
+            }
+
+            // Action buttons
+            document.addEventListener('click', function (e) {
+                // Like button
+                if (e.target.closest('[data-liked]')) {
+                    const btn = e.target.closest('[data-liked]');
+                    const isLiked = btn.getAttribute('data-liked') === 'true';
+                    const countSpan = btn.querySelector('span');
+                    let count = parseInt(countSpan.textContent.replace('K', '')) * 1000;
+
+                    if (isLiked) {
+                        btn.classList.remove('liked');
+                        btn.setAttribute('data-liked', 'false');
+                        count -= 1;
+                    } else {
+                        btn.classList.add('liked');
+                        btn.setAttribute('data-liked', 'true');
+                        count += 1;
+                    }
+
+                    countSpan.textContent = (count / 1000).toFixed(1) + 'K';
+                }
+
+                // Bookmark button
+                if (e.target.closest('[data-bookmarked]')) {
+                    const btn = e.target.closest('[data-bookmarked]');
+                    const isBookmarked = btn.getAttribute('data-bookmarked') === 'true';
+                    const textSpan = btn.querySelector('span');
+
+                    if (isBookmarked) {
+                        btn.classList.remove('bookmarked');
+                        btn.setAttribute('data-bookmarked', 'false');
+                        textSpan.textContent = 'Lưu truyện';
+                    } else {
+                        btn.classList.add('bookmarked');
+                        btn.setAttribute('data-bookmarked', 'true');
+                        textSpan.textContent = 'Đã lưu';
+                    }
+                }
+            });
+
+            // Chapter search
+            const chapterSearch = document.getElementById('chapter-search');
+            const chapterItems = document.querySelectorAll('.chapter-item');
+
+            chapterSearch.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+
+                chapterItems.forEach(item => {
+                    const title = item.querySelector('h4').textContent.toLowerCase();
+                    const chapter = item.getAttribute('data-chapter');
+
+                    if (title.includes(searchTerm) || chapter.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // Load more chapters
+            document.getElementById('load-more-chapters').addEventListener('click', function () {
+                const chapterList = document.getElementById('chapter-list');
+                const loadMoreBtn = this;
+
+                // Show loading state
+                loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...';
+                loadMoreBtn.disabled = true;
+
+                // Simulate loading delay
+                setTimeout(() => {
+                    // Add more chapters
+                    const moreChapters = [
+                        { number: 844, title: "Luffy vs. Cracker", status: "read" },
+                        { number: 843, title: "Vinsmoke Sanji", status: "read" },
+                        { number: 842, title: "Sức mạnh của Mink", status: "read" },
+                        { number: 841, title: "Đến Whole Cake Island", status: "read" },
+                        { number: 840, title: "Tạm biệt", status: "read" }
+                    ];
+
+                    moreChapters.forEach(chapter => {
+                        const chapterElement = document.createElement('div');
+                        chapterElement.className = `chapter-item ${chapter.status} p-4 rounded-xl border hover:shadow-md transition-all cursor-pointer`;
+                        chapterElement.setAttribute('data-chapter', chapter.number);
+                        chapterElement.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-green-600">${chapter.number}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">Chương ${chapter.number}: ${chapter.title}</h4>
+                                        <p class="text-sm text-gray-500">Đã đọc • 18 trang</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-check text-green-500"></i>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                            </div>
+                        `;
+                        chapterList.appendChild(chapterElement);
+                    });
+
+                    // Reset button
+                    loadMoreBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Xem thêm chương';
+                    loadMoreBtn.disabled = false;
+                }, 1000);
+            });
+
+            // Load more comments
+            document.getElementById('load-more-comments').addEventListener('click', function () {
+                const commentsList = document.getElementById('comments-list');
+                const loadMoreBtn = this;
+
+                // Show loading state
+                loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang tải...';
+                loadMoreBtn.disabled = true;
+
+                // Simulate loading delay
+                setTimeout(() => {
+                    // Add more comments
+                    const moreComments = [
+                        {
+                            user: "StrawHatFan",
+                            avatar: "SH",
+                            time: "2 ngày trước",
+                            content: "Không thể tin được Luffy đã mạnh đến thế này! Gear 5 thật sự là đỉnh cao của sức mạnh! 🚀",
+                            likes: 67
+                        },
+                        {
+                            user: "PirateKing2024",
+                            avatar: "PK",
+                            time: "3 ngày trước",
+                            content: "Oda sensei đã lên kế hoạch cho Gear 5 từ rất lâu rồi. Những chi tiết nhỏ trong các arc trước đều có ý nghĩa!",
+                            likes: 45
+                        }
+                    ];
+
+                    moreComments.forEach(comment => {
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment-item p-4 rounded-xl';
+                        commentElement.innerHTML = `
+                            <div class="flex space-x-4">
+                                <div class="comment-avatar">
+                                    ${comment.avatar}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <h5 class="font-semibold">${comment.user}</h5>
+                                        <span class="text-xs text-gray-500">${comment.time}</span>
+                                    </div>
+                                    <p class="text-gray-700 mb-3">${comment.content}</p>
+                                    <div class="flex items-center space-x-4 text-sm">
+                                        <button class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                            <i class="fas fa-thumbs-up mr-1"></i>
+                                            <span>${comment.likes}</span>
+                                        </button>
+                                        <button class="text-gray-500 hover:text-blue-500 transition-colors flex items-center">
+                                            <i class="fas fa-reply mr-1"></i>
+                                            Trả lời
+                                        </button>
+                                        <button class="text-gray-500 hover:text-red-500 transition-colors">
+                                            <i class="fas fa-flag mr-1"></i>
+                                            Báo cáo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        commentsList.appendChild(commentElement);
+                    });
+
+                    // Reset button
+                    loadMoreBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Xem thêm bình luận';
+                    loadMoreBtn.disabled = false;
+                }, 1000);
+            });
+
+            // Chapter click handler
+            document.addEventListener('click', function (e) {
+                const chapterItem = e.target.closest('.chapter-item');
+                if (chapterItem) {
+                    const chapterNumber = chapterItem.getAttribute('data-chapter');
+                    // Simulate navigation to chapter
+                    console.log(`Navigating to chapter ${chapterNumber}`);
+                    // In a real app, you would navigate to the reading page
+                    // window.location.href = `read.html?chapter=${chapterNumber}`;
+                }
+            });
+
+            // Scroll to top button
+            const scrollToTopBtn = document.getElementById('scroll-to-top');
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.style.display = 'block';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
+                }
+            });
+
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Share functionality
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('button') && e.target.closest('button').textContent.includes('Chia sẻ')) {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'One Piece - Manga',
+                            text: 'Đọc One Piece - Cuộc phiêu lưu tìm kiếm kho báu huyền thoại!',
+                            url: window.location.href
+                        });
+                    } else {
+                        // Fallback for browsers that don't support Web Share API
+                        const url = window.location.href;
+                        navigator.clipboard.writeText(url).then(() => {
+                            alert('Đã sao chép link vào clipboard!');
+                        });
+                    }
+                }
+            });
+
+            // Comment like functionality
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('button') && e.target.closest('button').querySelector('.fa-thumbs-up')) {
+                    const btn = e.target.closest('button');
+                    const countSpan = btn.querySelector('span');
+                    let count = parseInt(countSpan.textContent);
+
+                    if (btn.classList.contains('liked')) {
+                        btn.classList.remove('liked', 'text-blue-500');
+                        btn.classList.add('text-gray-500');
+                        count -= 1;
+                    } else {
+                        btn.classList.add('liked', 'text-blue-500');
+                        btn.classList.remove('text-gray-500');
+                        count += 1;
+                    }
+
+                    countSpan.textContent = count;
+                }
+            });
+
+            // Initialize scroll position
+            scrollToTopBtn.style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>

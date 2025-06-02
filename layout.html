@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangaVerse - Đọc truyện tranh online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/layout.css">
+
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="logo flex items-center">
+                        <div class="logo-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <span>MangaVerse</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="desktop-nav hidden lg:flex items-center space-x-1">
+                    <div class="nav-item relative">
+                        <a href="index.html" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            Trang chủ
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item relative">
+                        <a href="category.html" class="nav-link">
+                            <i class="fas fa-list"></i>
+                            Thể loại
+                        </a>
+                        <div class="mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-fire mr-2"></i>Phổ biến</h4>
+                                    <a href="category.html" class="mega-menu-link">Action</a>
+                                    <a href="category.html" class="mega-menu-link">Romance</a>
+                                    <a href="category.html" class="mega-menu-link">Comedy</a>
+                                    <a href="category.html" class="mega-menu-link">Drama</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-star mr-2"></i>Đặc sắc</h4>
+                                    <a href="category.html" class="mega-menu-link">Fantasy</a>
+                                    <a href="category.html" class="mega-menu-link">Sci-Fi</a>
+                                    <a href="category.html" class="mega-menu-link">Horror</a>
+                                    <a href="category.html" class="mega-menu-link">Mystery</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-globe mr-2"></i>Theo quốc gia</h4>
+                                    <a href="category.html" class="mega-menu-link">🇯🇵 Manga</a>
+                                    <a href="category.html" class="mega-menu-link">🇰🇷 Manhwa</a>
+                                    <a href="category.html" class="mega-menu-link">🇨🇳 Manhua</a>
+                                    <a href="category.html" class="mega-menu-link">🇻🇳 Truyện Việt</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        Mới cập nhật
+                    </a>
+
+                </nav>
+
+                <!-- Search Bar -->
+                <div class="search-container hidden md:block">
+                    <input type="text" class="search-input" placeholder="Tìm truyện, tác giả..." id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>One Piece</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>Naruto</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-user"></i>
+                            <span>Oda Eiichiro</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-2">
+                    <!-- Theme Toggle -->
+                    <button class="action-btn" onclick="toggleTheme()" title="Chuyển đổi chế độ">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Bookmarks -->
+                    <button class="action-btn" onclick="toggleBookmarks()" title="Bookmark">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="action-btn" onclick="toggleNotifications()" title="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <span>U</span>
+                        </div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-header">
+                                <h4>User Name</h4>
+                                <p>Thành viên VIP</p>
+                            </div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Hồ sơ
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-history"></i>
+                                Lịch sử đọc
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-heart"></i>
+                                Yêu thích
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-download"></i>
+                                Đã tải xuống
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Cài đặt
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars" id="mobileMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="flex justify-between items-center mb-8">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span>MangaVerse</span>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="search-container mb-6">
+                <input type="text" class="search-input" placeholder="Tìm truyện, tác giả...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav>
+                <a href="index.html" class="mobile-nav-link">
+                    <i class="fas fa-home"></i>
+                    Trang chủ
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-list"></i>
+                    Thể loại
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-clock"></i>
+                    Mới cập nhật
+                </a>
+            </nav>
+
+            <!-- Mobile User Actions -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-user"></i>
+                    Hồ sơ
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-bookmark"></i>
+                    Bookmark
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-history"></i>
+                    Lịch sử đọc
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-cog"></i>
+                    Cài đặt
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container mx-auto px-4">
+            <!-- Content goes here -->
+            <h1 class="text-3xl font-bold mb-6">Chào mừng đến với MangaVerse</h1>
+            <p class="text-gray-700 mb-4">Nơi bạn có thể tìm thấy hàng triệu bộ truyện tranh yêu thích.</p>
+            <p class="text-gray-500">Khám phá, đọc và chia sẻ đam mê truyện tranh của bạn với cộng đồng.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="container mx-auto px-4 py-16">
+                <!-- Stats Section -->
+                <div class="stats-grid mb-12">
+                    <div class="stat-card">
+                        <div class="stat-number">15,000+</div>
+                        <div class="stat-label">Bộ truyện</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500K+</div>
+                        <div class="stat-label">Chapter</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2M+</div>
+                        <div class="stat-label">Người dùng</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Cập nhật/ngày</div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Company Info -->
+                    <div class="footer-section">
+                        <div class="flex items-center mb-6">
+                            <div class="logo-icon mr-3">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <span class="text-2xl font-bold">MangaVerse</span>
+                        </div>
+                        <p class="text-gray-300 mb-6 leading-relaxed">
+                            Nền tảng đọc truyện tranh hàng đầu với thư viện khổng lồ và trải nghiệm đọc tuyệt vời.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Discord">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                            <a href="#" class="social-link" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-link"></i>
+                            Liên kết nhanh
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-home"></i>
+                                Trang chủ
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fire"></i>
+                                Truyện hot
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-star"></i>
+                                Xếp hạng
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-clock"></i>
+                                Mới cập nhật
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-random"></i>
+                                Ngẫu nhiên
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-info-circle"></i>
+                                Về chúng tôi
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-tags"></i>
+                            Thể loại phổ biến
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fist-raised"></i>
+                                Action
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-heart"></i>
+                                Romance
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-laugh"></i>
+                                Comedy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-magic"></i>
+                                Fantasy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-ghost"></i>
+                                Horror
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-graduation-cap"></i>
+                                School Life
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Recent Updates -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Cập nhật gần đây
+                        </h3>
+                        <div class="recent-manga">
+                            <div class="manga-cover-small">OP</div>
+                            <div class="manga-info-small">
+                                <h4>One Piece</h4>
+                                <p>Chapter 1095 • 2 giờ trước</p>
+                            </div>
+                        </div>
+                        <div class="recent-manga">
+                            <div class="manga-cover-small">AOT</div>
+                            <div class="manga-info-small">
+                                <h4>Attack on Titan</h4>
+                                <p>Chapter 139 • 5 giờ trước</p>
+                            </div>
+                        </div>
+                        <div class="recent-manga">
+                            <div class="manga-cover-small">DS</div>
+                            <div class="manga-info-small">
+                                <h4>Demon Slayer</h4>
+                                <p>Chapter 205 • 1 ngày trước</p>
+                            </div>
+                        </div>
+                        <div class="recent-manga">
+                            <div class="manga-cover-small">MHA</div>
+                            <div class="manga-info-small">
+                                <h4>My Hero Academia</h4>
+                                <p>Chapter 403 • 2 ngày trước</p>
+                            </div>
+                        </div>
+
+                        <!-- Newsletter -->
+                        <div class="mt-6">
+                            <h4 class="text-white font-semibold mb-3">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Đăng ký nhận tin
+                            </h4>
+                            <p class="text-gray-300 mb-4 text-sm">
+                                Nhận thông báo chapter mới và tin tức manga mới nhất.
+                            </p>
+                            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                                <input type="email" class="newsletter-input" placeholder="Email của bạn..." required>
+                                <button type="submit" class="newsletter-btn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Đăng ký
+                                    </span>
+                                    <span class="loading hidden">
+                                        <div class="loading"></div>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p>&copy; 2024 MangaVerse. Tất cả quyền được bảo lưu.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Chính sách bảo mật</a>
+                            <a href="#">Điều khoản sử dụng</a>
+                            <a href="#">DMCA</a>
+                            <a href="#">Liên hệ</a>
+                            <a href="#">API</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+   <script src="js/layout.js"></script>
+</body>
+</html>

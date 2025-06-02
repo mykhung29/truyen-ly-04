@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đọc One Piece - Chương 1095</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Custom Properties */
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --secondary-color: #10b981;
+        --accent-color: #f59e0b;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --bg-glass: rgba(0, 0, 0, 0.3);
+        --bg-glass-light: rgba(0, 0, 0, 0.2);
+        --border-glass: rgba(255, 255, 255, 0.2);
+        --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+        --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2);
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* Reading Container Modes */
+    .reading-container {
+        transition: var(--transition-smooth);
+        min-height: 100vh;
+        padding: 80px 20px 120px;
+        position: relative;
+        overflow-x: auto;
+    }
+    
+    .reading-container.vertical {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .reading-container.horizontal {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        overflow-x: auto;
+        align-items: center;
+        gap: 25px;
+        padding: 80px 40px 120px;
+    }
+    
+    .reading-container.single-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 80px 20px 120px;
+    }
+
+    /* Manga Page Container - Fixed zoom implementation */
+    .manga-page-container {
+        transition: var(--transition-smooth);
+        transform-origin: center top;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    
+    /* Background Themes */
+    .bg-white-theme { 
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    }
+    .bg-dark-theme { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #f1f5f9;
+    }
+    .bg-sepia-theme { 
+        background: linear-gradient(135deg, #fef7ed 0%, #f4f3e8 100%);
+    }
+    .bg-night-theme { 
+        background: linear-gradient(135deg, #0c0a09 0%, #1c1917 100%);
+        color: #fafaf9;
+    }
+    .bg-blue-theme { 
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    }
+    .bg-green-theme { 
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+
+    /* Glassmorphism Control Bars with Dark Background */
+    .control-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        z-index: 1000;
+        transition: var(--transition-smooth);
+    }
+    
+    .top-control-bar {
+        top: 0;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-radius: 0 0 20px 20px;
+        margin: 0 10px;
+        transform: translateY(0);
+    }
+    
+    .top-control-bar.hidden {
+        transform: translateY(-120%);
+    }
+    
+    .bottom-control-bar {
+        bottom: 0;
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: none;
+        border-left: none;
+        border-right: none;
+        border-radius: 20px 20px 0 0;
+        margin: 0 10px;
+        transform: translateY(0);
+    }
+    
+    .bottom-control-bar.hidden {
+        transform: translateY(120%);
+    }
+
+    /* Modern Control Buttons with Dark Background */
+    .control-btn {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: var(--transition-bounce);
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .control-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .control-btn:hover::before {
+        left: 100%;
+    }
+    
+    .control-btn:hover {
+        background: rgba(0, 0, 0, 0.6);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .control-btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+    
+    .control-btn.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Animated Dropdowns with Dark Background */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .dropdown-content {
+        position: absolute;
+        bottom: calc(100% + 15px);
+        left: 50%;
+        transform: translateX(-50%) translateY(20px) scale(0.9);
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        min-width: 280px;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition-bounce);
+        box-shadow: var(--shadow-strong);
+        color: white;
+    }
+    
+    .dropdown.active .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    /* Theme Selection Grid */
+    .theme-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 15px;
+    }
+    
+    .theme-option {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: var(--transition-bounce);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .theme-option::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: var(--transition-smooth);
+        transform: translate(-50%, -50%);
+    }
+    
+    .theme-option:hover::before {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .theme-option:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .theme-option.active {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        transform: scale(1.05);
+    }
+
+    /* Reading Mode Options with Dark Background */
+    .reading-mode-option {
+        padding: 15px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+    
+    .reading-mode-option::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .reading-mode-option:hover::before {
+        left: 100%;
+    }
+    
+    .reading-mode-option:hover {
+        background: rgba(0, 0, 0, 0.5);
+        transform: translateX(5px);
+    }
+    
+    .reading-mode-option.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Modern Modals with Dark Background and Click Outside to Close */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        padding: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition-smooth);
+        cursor: pointer; /* Allow clicking on overlay */
+    }
+    
+    .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .modal-content {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 80vh; /* Reduced from 85vh to prevent overflow */
+        overflow: hidden; /* Hide overflow on container */
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: var(--shadow-strong);
+        transform: scale(0.8) translateY(50px);
+        transition: var(--transition-bounce);
+        cursor: default; /* Prevent closing when clicking on content */
+    }
+    
+    .modal-overlay.show .modal-content {
+        transform: scale(1) translateY(0);
+    }
+
+    /* Fixed Modal Content Scrolling */
+    .modal-scrollable-content {
+        max-height: calc(80vh - 120px); /* Account for header and padding */
+        overflow-y: auto;
+        padding-right: 10px; /* Space for scrollbar */
+        margin-right: -10px; /* Compensate for padding */
+    }
+
+    /* Progress Bar with Glow */
+    .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        transition: var(--transition-smooth);
+        z-index: 999;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    /* Floating Page Navigation with Dark Background */
+    .page-nav {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: var(--transition-bounce);
+        z-index: 998;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .page-nav:hover {
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: var(--shadow-strong);
+    }
+    
+    .page-nav.prev {
+        left: 30px;
+    }
+    
+    .page-nav.next {
+        right: 30px;
+    }
+    
+    .page-nav.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-50%) scale(0.8);
+    }
+
+    /* Task Items with Modern Design */
+    .task-item {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+        border-left: 4px solid var(--primary-color);
+        padding: 16px;
+        margin: 12px 0;
+        border-radius: 12px;
+        transition: var(--transition-smooth);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .task-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        transition: left 0.8s ease;
+    }
+    
+    .task-item:hover::before {
+        left: 100%;
+    }
+    
+    .task-item.completed {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+        border-left-color: var(--secondary-color);
+        transform: scale(1.02);
+    }
+    
+    .task-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+    }
+
+    /* Chapter List Items */
+    .chapter-item {
+        padding: 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.5);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .chapter-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .chapter-item:hover::before {
+        left: 100%;
+    }
+    
+    .chapter-item:hover {
+        background: rgba(59, 130, 246, 0.1);
+        border-color: var(--primary-color);
+        transform: translateX(5px);
+        box-shadow: var(--shadow-medium);
+    }
+    
+    .chapter-item.current {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+        border-color: var(--primary-color);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Achievement Notification */
+    .achievement-notification {
+        position: fixed;
+        top: 100px;
+        right: 30px;
+        background: linear-gradient(135deg, var(--secondary-color), #34d399);
+        color: white;
+        padding: 20px 25px;
+        border-radius: 16px;
+        box-shadow: var(--shadow-strong);
+        transform: translateX(400px) scale(0.8);
+        transition: var(--transition-bounce);
+        z-index: 1002;
+        max-width: 320px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .achievement-notification.show {
+        transform: translateX(0) scale(1);
+    }
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        border-radius: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+    }
+
+    /* Zoom Controls Styling */
+    .zoom-controls {
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 25px;
+        padding: 8px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .zoom-controls .control-btn {
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .zoom-controls .control-btn:hover {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .reading-container {
+            padding: 70px 15px 110px;
+        }
+        
+        .reading-container.horizontal {
+            padding: 70px 20px 110px;
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .top-control-bar, .bottom-control-bar {
+            margin: 0 5px;
+            padding: 12px 15px;
+            border-radius: 15px;
+        }
+        
+        .control-btn {
+            padding: 10px 14px;
+            font-size: 13px;
+            gap: 6px;
+        }
+        
+        .control-btn span {
+            display: none;
+        }
+        
+        .dropdown-content {
+            min-width: 250px;
+            padding: 15px;
+            left: 0;
+            transform: translateX(0) translateY(20px) scale(0.9);
+        }
+        
+        .dropdown.active .dropdown-content {
+            transform: translateX(0) translateY(0) scale(1);
+        }
+        
+        .modal-content {
+            margin: 10px;
+            padding: 20px;
+            border-radius: 16px;
+            max-height: 90vh;
+        }
+
+        .modal-scrollable-content {
+            max-height: calc(90vh - 100px);
+        }
+        
+        .page-nav {
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+        }
+        
+        .page-nav.prev {
+            left: 20px;
+        }
+        
+        .page-nav.next {
+            right: 20px;
+        }
+        
+        .reading-container {
+            padding: 60px 10px 100px;
+        }
+        
+        .achievement-notification {
+            right: 15px;
+            max-width: 280px;
+            padding: 15px 20px;
+        }
+        
+        .theme-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .theme-option {
+            width: 45px;
+            height: 45px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .top-control-bar, .bottom-control-bar {
+            margin: 0;
+            border-radius: 0;
+        }
+        
+        .control-btn {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+        
+        .dropdown-content {
+            min-width: 220px;
+            padding: 12px;
+        }
+        
+        .reading-container {
+            padding: 55px 5px 95px;
+        }
+        
+        .page-nav {
+            width: 45px;
+            height: 45px;
+            font-size: 16px;
+        }
+        
+        .page-nav.prev {
+            left: 15px;
+        }
+        
+        .page-nav.next {
+            right: 15px;
+        }
+        
+        .achievement-notification {
+            right: 10px;
+            max-width: 260px;
+            padding: 12px 16px;
+        }
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Pulse Animation for Active Elements */
+    .pulse-glow {
+        animation: pulse-glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes pulse-glow {
+        from {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        to {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+        }
+    }
+
+    /* Smooth Page Transitions */
+    .page-transition {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    .page-transition.fade-out {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+</style>
+</head>
+<body class="bg-white-theme transition-colors duration-500">
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+<!-- Top Control Bar -->
+<div class="control-bar top-control-bar" id="topControlBar">
+    <div class="flex items-center justify-between">
+        <!-- Left Controls -->
+        <div class="flex items-center space-x-3">
+            <a href="index.html">
+            <button class="control-btn group" title="Trang chủ">
+                <i class="fas fa-home transition-transform group-hover:scale-110"></i>
+                <span class="hidden sm:inline">Trang chủ</span>
+            </button></a>
+            <a href="detail.html">
+            <button class="control-btn group" title="Chi tiết truyện">
+                <i class="fas fa-info-circle transition-transform group-hover:scale-110"></i>
+                <span class="hidden sm:inline">Chi tiết</span>
+            </button></a>
+        </div>
+
+        <!-- Center Info -->
+        <div class="flex items-center space-x-4">
+            <div class="text-center">
+                <div class="font-semibold text-sm sm:text-base">One Piece - Chương 1095</div>
+                <div class="text-xs sm:text-sm opacity-80 hidden sm:block">Thế giới mà chúng ta mong muốn</div>
+            </div>
+        </div>
+
+        <!-- Right Controls -->
+        <div class="flex items-center space-x-3">
+            <div class="text-xs sm:text-sm bg-black/30 px-3 py-1 rounded-full">
+                <span id="currentPageTop">1</span>/<span id="totalPagesTop">18</span>
+            </div>
+            <button class="control-btn group" onclick="toggleControls()" title="Ẩn/Hiện điều khiển">
+                <i class="fas fa-eye-slash transition-transform group-hover:scale-110" id="toggleIcon"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Page Navigation -->
+<button class="page-nav prev group" id="prevBtn" onclick="previousPage()" title="Trang trước">
+    <i class="fas fa-chevron-left transition-transform group-hover:scale-110"></i>
+</button>
+<button class="page-nav next group" id="nextBtn" onclick="nextPage()" title="Trang sau">
+    <i class="fas fa-chevron-right transition-transform group-hover:scale-110"></i>
+</button>
+
+<!-- Achievement Notification -->
+<div class="achievement-notification" id="achievementNotification">
+    <div class="flex items-center space-x-3">
+        <i class="fas fa-trophy text-xl"></i>
+        <div>
+            <div class="font-bold text-sm">Thành tựu mở khóa!</div>
+            <div class="text-xs opacity-90" id="achievementText">Đọc 5 trang liên tiếp</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Reading Container -->
+<div class="reading-container vertical" id="readingContainer">
+    <div class="manga-page-container" id="mangaPages">
+        <img src="images/read2.jpg" alt="Trang 1" class="manga-page page-transition" data-page="1" onclick="toggleControlsOnClick()">
+        <img src="images/read3.jpg" alt="Trang 2" class="manga-page page-transition" data-page="2" onclick="toggleControlsOnClick()">
+        <img src="images/read4.jpg" alt="Trang 3" class="manga-page page-transition" data-page="3" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 4" class="manga-page page-transition" data-page="4" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 5" class="manga-page page-transition" data-page="5" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 6" class="manga-page page-transition" data-page="6" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 7" class="manga-page page-transition" data-page="7" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 8" class="manga-page page-transition" data-page="8" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 9" class="manga-page page-transition" data-page="9" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 10" class="manga-page page-transition" data-page="10" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 11" class="manga-page page-transition" data-page="11" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 12" class="manga-page page-transition" data-page="12" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 13" class="manga-page page-transition" data-page="13" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 14" class="manga-page page-transition" data-page="14" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 15" class="manga-page page-transition" data-page="15" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 16" class="manga-page page-transition" data-page="16" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 17" class="manga-page page-transition" data-page="17" onclick="toggleControlsOnClick()">
+        <img src="images/read2.jpg" alt="Trang 18" class="manga-page page-transition" data-page="18" onclick="toggleControlsOnClick()">
+    </div>
+</div>
+
+<!-- Bottom Control Bar -->
+<div class="control-bar bottom-control-bar" id="bottomControlBar">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+        <!-- Left Controls -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <button class="control-btn group" onclick="previousChapter()" title="Tập trước">
+                <i class="fas fa-step-backward transition-transform group-hover:scale-110"></i>
+                <span class="hidden lg:inline">Tập trước</span>
+            </button>
+            <button class="control-btn group" onclick="nextChapter()" title="Tập sau">
+                <i class="fas fa-step-forward transition-transform group-hover:scale-110"></i>
+                <span class="hidden lg:inline">Tập sau</span>
+            </button>
+        </div>
+
+        <!-- Center Controls -->
+        <div class="flex items-center space-x-2 sm:space-x-3 flex-wrap justify-center">
+            <!-- Background Theme Dropdown -->
+            <div class="dropdown" id="themeDropdown">
+                <button class="control-btn group" onclick="toggleDropdown('themeDropdown')" title="Màu nền">
+                    <i class="fas fa-palette transition-transform group-hover:scale-110"></i>
+                    <span class="hidden md:inline">Màu nền</span>
+                </button>
+                <div class="dropdown-content">
+                    <div class="text-sm font-semibold mb-3 text-center">Chọn màu nền</div>
+                    <div class="theme-grid">
+                        <div class="theme-option active" style="background: linear-gradient(135deg, #ffffff, #f8fafc); border: 1px solid #e2e8f0;" 
+                             onclick="setTheme('white')" title="Nền trắng">
+                            <i class="fas fa-sun text-yellow-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #0f172a, #1e293b);" 
+                             onclick="setTheme('dark')" title="Nền tối">
+                            <i class="fas fa-moon text-blue-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #fef7ed, #f4f3e8);" 
+                             onclick="setTheme('sepia')" title="Nền sepia">
+                            <i class="fas fa-leaf text-amber-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #0c0a09, #1c1917);" 
+                             onclick="setTheme('night')" title="Chế độ đêm">
+                            <i class="fas fa-star text-yellow-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #eff6ff, #dbeafe);" 
+                             onclick="setTheme('blue')" title="Nền xanh">
+                            <i class="fas fa-water text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                        <div class="theme-option" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7);" 
+                             onclick="setTheme('green')" title="Nền xanh lá">
+                            <i class="fas fa-seedling text-green-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reading Mode Dropdown -->
+            <div class="dropdown" id="modeDropdown">
+                <button class="control-btn group" onclick="toggleDropdown('modeDropdown')" title="Chế độ đọc">
+                    <i class="fas fa-arrows-alt transition-transform group-hover:scale-110"></i>
+                    <span class="hidden md:inline">Chế độ</span>
+                </button>
+                <div class="dropdown-content">
+                    <div class="text-sm font-semibold mb-3 text-center">Chế độ đọc</div>
+                    <div class="reading-mode-option active" onclick="setReadingMode('vertical')">
+                        <i class="fas fa-arrows-alt-v text-lg"></i>
+                        <div>
+                            <div class="font-medium">Đọc dọc</div>
+                            <div class="text-xs opacity-70">Cuộn từ trên xuống</div>
+                        </div>
+                    </div>
+                    <div class="reading-mode-option" onclick="setReadingMode('horizontal')">
+                        <i class="fas fa-arrows-alt-h text-lg"></i>
+                        <div>
+                            <div class="font-medium">Đọc ngang</div>
+                            <div class="text-xs opacity-70">Cuộn từ trái qua phải</div>
+                        </div>
+                    </div>
+                    <div class="reading-mode-option" onclick="setReadingMode('single')">
+                        <i class="fas fa-file text-lg"></i>
+                        <div>
+                            <div class="font-medium">Lật trang</div>
+                            <div class="text-xs opacity-70">Từng trang một</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto Scroll -->
+            <button class="control-btn group" id="autoScrollBtn" onclick="toggleAutoScroll()" title="Tự động cuộn">
+                <i class="fas fa-play transition-transform group-hover:scale-110"></i>
+                <span class="hidden md:inline">Tự động</span>
+            </button>
+
+            <!-- Tasks -->
+            <button class="control-btn group" onclick="showTasksModal()" title="Nhiệm vụ">
+                <i class="fas fa-tasks transition-transform group-hover:scale-110"></i>
+                <span class="hidden md:inline">Nhiệm vụ</span>
+            </button>
+
+            <!-- Chapter List -->
+            <button class="control-btn group" onclick="showChapterListModal()" title="Danh sách tập">
+                <i class="fas fa-list transition-transform group-hover:scale-110"></i>
+                <span class="hidden md:inline">Danh sách</span>
+            </button>
+        </div>
+
+        <!-- Right Controls -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <div class="zoom-controls flex items-center space-x-2">
+                <button class="control-btn" onclick="zoomOut()" title="Thu nhỏ">
+                    <i class="fas fa-minus text-xs"></i>
+                </button>
+                <span class="text-xs font-medium min-w-[40px] text-center text-white" id="zoomLevel">100%</span>
+                <button class="control-btn" onclick="zoomIn()" title="Phóng to">
+                    <i class="fas fa-plus text-xs"></i>
+                </button>
+            </div>
+            <button class="control-btn group" onclick="toggleFullscreen()" title="Toàn màn hình">
+                <i class="fas fa-expand transition-transform group-hover:scale-110"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks Modal -->
+<div class="modal-overlay" id="tasksModal" onclick="handleModalOverlayClick(event, 'tasksModal')">
+    <div class="modal-content custom-scrollbar">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center text-gray-800">
+                <i class="fas fa-tasks mr-3 text-blue-500"></i>
+                Nhiệm vụ & Phần thưởng
+            </h2>
+            <button onclick="hideModal('tasksModal')" class="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="modal-scrollable-content custom-scrollbar">
+            <!-- Progress -->
+            <div class="mb-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-semibold text-gray-800">Tiến độ chương</span>
+                    <span class="text-blue-600 font-bold text-lg"><span id="progressPercent">0</span>%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500 relative" id="progressBarModal" style="width: 0%">
+                        <div class="absolute inset-0 bg-white/30 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-600 mt-2">
+                    Trang <span id="currentPageModal">1</span> / <span id="totalPagesModal">18</span>
+                </div>
+            </div>
+
+            <!-- Tasks -->
+            <div class="mb-6">
+                <h3 class="font-semibold mb-4 text-gray-800 flex items-center">
+                    <i class="fas fa-clipboard-list mr-2 text-green-500"></i>
+                    Nhiệm vụ chương này
+                </h3>
+                <div class="space-y-3">
+                    <div class="task-item completed" id="task1">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-green-500 text-lg"></i>
+                                <div>
+                                    <div class="font-medium text-gray-800">Bắt đầu đọc chương</div>
+                                    <div class="text-xs text-gray-500">Mở trang đầu tiên</div>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">Hoàn thành</span>
+                        </div>
+                    </div>
+
+                    <div class="task-item" id="task2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-circle text-gray-400 text-lg"></i>
+                                <div>
+                                    <div class="font-medium text-gray-800">Đọc 50% chương</div>
+                                    <div class="text-xs text-gray-500">Đọc đến trang 9</div>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">Đang thực hiện</span>
+                        </div>
+                    </div>
+
+                    <div class="task-item" id="task3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-circle text-gray-400 text-lg"></i>
+                                <div>
+                                    <div class="font-medium text-gray-800">Hoàn thành chương</div>
+                                    <div class="text-xs text-gray-500">Đọc hết 18 trang</div>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">Chưa hoàn thành</span>
+                        </div>
+                    </div>
+
+                    <div class="task-item" id="task4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-circle text-gray-400 text-lg"></i>
+                                <div>
+                                    <div class="font-medium text-gray-800">Đọc không bỏ qua</div>
+                                    <div class="text-xs text-gray-500">Đọc từng trang một cách tuần tự</div>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">Chưa hoàn thành</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rewards -->
+            <div>
+                <h3 class="font-semibold mb-4 text-gray-800 flex items-center">
+                    <i class="fas fa-gift mr-2 text-yellow-500"></i>
+                    Phần thưởng
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl border-2 border-yellow-200 hover:border-yellow-300 transition-all hover:scale-105">
+                        <i class="fas fa-coins text-yellow-600 text-3xl mb-3"></i>
+                        <div class="font-bold text-gray-800">+100 Coins</div>
+                        <div class="text-sm text-gray-600">Hoàn thành chương</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200 hover:border-blue-300 transition-all hover:scale-105">
+                        <i class="fas fa-star text-blue-600 text-3xl mb-3"></i>
+                        <div class="font-bold text-gray-800">+50 EXP</div>
+                        <div class="text-sm text-gray-600">Kinh nghiệm đọc</div>
+                    </div>
+                    <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200 hover:border-purple-300 transition-all hover:scale-105">
+                        <i class="fas fa-trophy text-purple-600 text-3xl mb-3"></i>
+                        <div class="font-bold text-gray-800">Thành tựu</div>
+                        <div class="text-sm text-gray-600">Người đọc chăm chỉ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chapter List Modal -->
+<div class="modal-overlay" id="chapterListModal" onclick="handleModalOverlayClick(event, 'chapterListModal')">
+    <div class="modal-content custom-scrollbar">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold flex items-center text-gray-800">
+                <i class="fas fa-list mr-3 text-green-500"></i>
+                Danh sách tập
+            </h2>
+            <button onclick="hideModal('chapterListModal')" class="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="modal-scrollable-content custom-scrollbar">
+            <!-- Search -->
+            <div class="mb-6">
+                <div class="relative">
+                    <input type="text" placeholder="Tìm kiếm chương..." 
+                           class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
+            <!-- Chapter List -->
+            <div class="space-y-3">
+                <div class="chapter-item current">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            95
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1095</div>
+                            <div class="text-sm text-gray-500">Thế giới mà chúng ta mong muốn</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">Đang đọc</span>
+                        <i class="fas fa-play text-blue-500"></i>
+                    </div>
+                </div>
+
+                <div class="chapter-item" onclick="goToChapter(1094)">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            94
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1094</div>
+                            <div class="text-sm text-gray-500">Jay Garcia Saturn</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">Hoàn thành</span>
+                        <i class="fas fa-check text-green-500"></i>
+                    </div>
+                </div>
+
+                <div class="chapter-item" onclick="goToChapter(1093)">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            93
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1093</div>
+                            <div class="text-sm text-gray-500">Luffy vs Kizaru</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">Hoàn thành</span>
+                        <i class="fas fa-check text-green-500"></i>
+                    </div>
+                </div>
+
+                <div class="chapter-item" onclick="goToChapter(1092)">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            92
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1092</div>
+                            <div class="text-sm text-gray-500">Kuma's Memories</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">Hoàn thành</span>
+                        <i class="fas fa-check text-green-500"></i>
+                    </div>
+                </div>
+
+                <div class="chapter-item" onclick="goToChapter(1096)">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            96
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1096</div>
+                            <div class="text-sm text-gray-500">Chương tiếp theo</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">Chưa có</span>
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- More chapters... -->
+                <div class="chapter-item" onclick="goToChapter(1091)">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            91
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1091</div>
+                            <div class="text-sm text-gray-500">Sentomaru</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-check text-green-500"></i>
+                </div>
+
+                <div class="chapter-item" onclick="goToChapter(1090)">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center text-white font-bold">
+                            90
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">Chương 1090</div>
+                            <div class="text-sm text-gray-500">Admiral Kizaru</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-check text-green-500"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global Variables
+    let currentPage = 1;
+    let totalPages = 18;
+    let readingMode = 'vertical';
+    let currentTheme = 'white';
+    let isAutoScrolling = false;
+    let autoScrollInterval;
+    let zoomLevel = 100;
+    let isFullscreen = false;
+    let controlsVisible = true;
+    let readingStartTime = Date.now();
+    let pagesRead = [1];
+    let achievements = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        updateProgress();
+        updatePageDisplay();
+        startReadingTimer();
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', handleKeyboard);
+        
+        // Scroll tracking
+        window.addEventListener('scroll', trackScrollProgress);
+        
+        // Click outside to close dropdowns
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown')) {
+                closeAllDropdowns();
+            }
+        });
+    });
+
+    // Navigation Functions
+    function goToHome() {
+        window.location.href = 'index.html';
+    }
+
+    function goToDetail() {
+        window.location.href = 'manga-detail.html';
+    }
+
+    function previousChapter() {
+        showLoadingState();
+        setTimeout(() => {
+            window.location.href = 'read.html?chapter=1094';
+        }, 500);
+    }
+
+    function nextChapter() {
+        showLoadingState();
+        setTimeout(() => {
+            window.location.href = 'read.html?chapter=1096';
+        }, 500);
+    }
+
+    function goToChapter(chapterNum) {
+        showLoadingState();
+        setTimeout(() => {
+            window.location.href = `read.html?chapter=${chapterNum}`;
+        }, 500);
+    }
+
+    function showLoadingState() {
+        const container = document.getElementById('mangaPages');
+        container.classList.add('fade-out');
+    }
+
+    // Reading Mode Functions
+    function setReadingMode(mode) {
+        readingMode = mode;
+        const container = document.getElementById('readingContainer');
+        
+        // Remove all mode classes
+        container.classList.remove('vertical', 'horizontal', 'single-page');
+        
+        // Update mode option active states
+        document.querySelectorAll('.reading-mode-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        
+        switch(mode) {
+            case 'vertical':
+                container.classList.add('vertical');
+                showAllPages();
+                break;
+            case 'horizontal':
+                container.classList.add('horizontal');
+                showAllPages();
+                break;
+            case 'single':
+                container.classList.add('single-page');
+                showSinglePage(currentPage);
+                break;
+        }
+        
+        // Update active state
+        event.target.closest('.reading-mode-option').classList.add('active');
+        updatePageNavigation();
+        closeAllDropdowns();
+        
+        // Show achievement
+        showAchievement(`Đã chuyển sang chế độ ${mode === 'vertical' ? 'đọc dọc' : mode === 'horizontal' ? 'đọc ngang' : 'lật trang'}`);
+    }
+
+    function showAllPages() {
+        const pages = document.querySelectorAll('.manga-page');
+        pages.forEach((page, index) => {
+            page.style.display = 'block';
+            // Stagger animation
+            setTimeout(() => {
+                page.classList.remove('fade-out');
+            }, index * 50);
+        });
+    }
+
+    function showSinglePage(pageNum) {
+        const pages = document.querySelectorAll('.manga-page');
+        pages.forEach((page, index) => {
+            if (index + 1 === pageNum) {
+                page.style.display = 'block';
+                page.classList.remove('fade-out');
+            } else {
+                page.style.display = 'none';
+            }
+        });
+    }
+
+    // Theme Functions
+    function setTheme(theme) {
+        const body = document.body;
+        const themes = ['bg-white-theme', 'bg-dark-theme', 'bg-sepia-theme', 'bg-night-theme', 'bg-blue-theme', 'bg-green-theme'];
+        
+        // Remove all theme classes
+        themes.forEach(t => body.classList.remove(t));
+        
+        // Add new theme
+        body.classList.add(`bg-${theme}-theme`);
+        currentTheme = theme;
+        
+        // Update theme option active states
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        closeAllDropdowns();
+        
+        // Show achievement
+        showAchievement(`Đã chuyển sang chủ đề ${theme}`);
+    }
+    //Zoom Functions
+function zoomIn() {
+        zoomLevel = Math.min(zoomLevel + 25, 300);
+        applyZoom();
+        showAchievement(`Phóng to: ${zoomLevel}%`);
+    }
+
+    function zoomOut() {
+        zoomLevel = Math.max(zoomLevel - 25, 50);
+        applyZoom();
+        showAchievement(`Thu nhỏ: ${zoomLevel}%`);
+    }
+
+    function applyZoom() {
+        const container = document.getElementById('mangaPages');
+        const scale = zoomLevel / 100;
+
+        // Apply scale
+        container.style.transform = `scale(${scale})`;
+        container.style.transformOrigin = 'top center';
+
+        // Update zoom level display
+        document.getElementById('zoomLevel').textContent = `${zoomLevel}%`;
+
+        // Reset padding so it doesn't cause overflow
+        const readingContainer = document.getElementById('readingContainer');
+        readingContainer.style.paddingLeft = '0';
+        readingContainer.style.paddingRight = '0';
+
+        // Adjust container height to fix white space
+        container.style.height = `${container.scrollHeight * scale}px`;
+    }
+
+
+    // Auto Scroll Functions
+    function toggleAutoScroll() {
+        const btn = document.getElementById('autoScrollBtn');
+        
+        if (isAutoScrolling) {
+            stopAutoScroll();
+            btn.innerHTML = '<i class="fas fa-play transition-transform group-hover:scale-110"></i><span class="hidden md:inline">Tự động</span>';
+            btn.classList.remove('active', 'pulse-glow');
+            showAchievement('Đã tắt tự động cuộn');
+        } else {
+            startAutoScroll();
+            btn.innerHTML = '<i class="fas fa-pause transition-transform group-hover:scale-110"></i><span class="hidden md:inline">Đang cuộn</span>';
+            btn.classList.add('active', 'pulse-glow');
+            showAchievement('Đã bật tự động cuộn');
+        }
+    }
+
+    function startAutoScroll() {
+        isAutoScrolling = true;
+        const scrollAmount = 2;
+        
+        autoScrollInterval = setInterval(() => {
+            if (readingMode !== 'single') {
+                window.scrollBy(0, scrollAmount);
+                
+                // Check if reached bottom
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                    stopAutoScroll();
+                    showAchievement('Đã cuộn hết chương');
+                }
+            }
+        }, 50);
+    }
+
+    function stopAutoScroll() {
+        isAutoScrolling = false;
+        if (autoScrollInterval) {
+            clearInterval(autoScrollInterval);
+        }
+    }
+
+    // Page Navigation
+    function nextPage() {
+        if (readingMode === 'single' && currentPage < totalPages) {
+            currentPage++;
+            showSinglePage(currentPage);
+            updateProgress();
+            trackPageRead(currentPage);
+            playPageTransition();
+        } else if (readingMode !== 'single') {
+            window.scrollBy(0, window.innerHeight);
+        }
+    }
+
+    function previousPage() {
+        if (readingMode === 'single' && currentPage > 1) {
+            currentPage--;
+            showSinglePage(currentPage);
+            updateProgress();
+            playPageTransition();
+        } else if (readingMode !== 'single') {
+            window.scrollBy(0, -window.innerHeight);
+        }
+    }
+
+    function playPageTransition() {
+        const currentPageElement = document.querySelector(`[data-page="${currentPage}"]`);
+        if (currentPageElement) {
+            currentPageElement.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                currentPageElement.style.transform = 'scale(1)';
+            }, 150);
+        }
+    }
+
+    function updatePageNavigation() {
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        if (readingMode === 'single') {
+            prevBtn.classList.toggle('hidden', currentPage === 1);
+            nextBtn.classList.toggle('hidden', currentPage === totalPages);
+        } else {
+            prevBtn.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+    }
+
+    // Progress Tracking
+    function updateProgress() {
+        const progress = (currentPage / totalPages) * 100;
+        document.getElementById('progressBar').style.width = `${progress}%`;
+        document.getElementById('progressBarModal').style.width = `${progress}%`;
+        document.getElementById('progressPercent').textContent = Math.round(progress);
+        updatePageDisplay();
+        checkTasks();
+    }
+
+    function updatePageDisplay() {
+        document.getElementById('currentPageTop').textContent = currentPage;
+        document.getElementById('totalPagesTop').textContent = totalPages;
+        document.getElementById('currentPageModal').textContent = currentPage;
+        document.getElementById('totalPagesModal').textContent = totalPages;
+    }
+
+    function trackScrollProgress() {
+        if (readingMode !== 'single') {
+            const scrolled = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const progress = Math.min((scrolled / maxScroll) * 100, 100);
+            
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressBarModal').style.width = `${progress}%`;
+            document.getElementById('progressPercent').textContent = Math.round(progress);
+            
+            // Calculate current page based on scroll position
+            const pages = document.querySelectorAll('.manga-page');
+            pages.forEach((page, index) => {
+                const rect = page.getBoundingClientRect();
+                if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                    currentPage = index + 1;
+                    updatePageDisplay();
+                    trackPageRead(currentPage);
+                }
+            });
+        }
+    }
+
+    function trackPageRead(pageNum) {
+        if (!pagesRead.includes(pageNum)) {
+            pagesRead.push(pageNum);
+            checkAchievements();
+        }
+    }
+
+    // Controls
+    function toggleControls() {
+        const topBar = document.getElementById('topControlBar');
+        const bottomBar = document.getElementById('bottomControlBar');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        controlsVisible = !controlsVisible;
+        
+        if (controlsVisible) {
+            topBar.classList.remove('hidden');
+            bottomBar.classList.remove('hidden');
+            toggleIcon.className = 'fas fa-eye-slash transition-transform group-hover:scale-110';
+        } else {
+            topBar.classList.add('hidden');
+            bottomBar.classList.add('hidden');
+            toggleIcon.className = 'fas fa-eye transition-transform group-hover:scale-110';
+        }
+    }
+
+    function toggleControlsOnClick() {
+        // Toggle controls when clicking on manga page with delay
+        setTimeout(() => {
+            toggleControls();
+        }, 100);
+    }
+
+    function toggleFullscreen() {
+        if (!isFullscreen) {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+            isFullscreen = true;
+            showAchievement('Đã bật chế độ toàn màn hình');
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+            isFullscreen = false;
+            showAchievement('Đã tắt chế độ toàn màn hình');
+        }
+    }
+
+    // Dropdown Functions
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+        const isActive = dropdown.classList.contains('active');
+        
+        // Close all dropdowns first
+        closeAllDropdowns();
+        
+        // Toggle current dropdown with animation
+        if (!isActive) {
+            dropdown.classList.add('active');
+        }
+    }
+
+    function closeAllDropdowns() {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    }
+
+    // Modal Functions with Click Outside to Close
+    function handleModalOverlayClick(event, modalId) {
+        // Only close if clicking on the overlay itself, not the content
+        if (event.target === event.currentTarget) {
+            hideModal(modalId);
+        }
+    }
+
+    function showTasksModal() {
+        const modal = document.getElementById('tasksModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function showChapterListModal() {
+        const modal = document.getElementById('chapterListModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Tasks and Achievements
+    function checkTasks() {
+        const progress = (currentPage / totalPages) * 100;
+        
+        // Task 2: Read 50%
+        if (progress >= 50 && !document.getElementById('task2').classList.contains('completed')) {
+            completeTask('task2');
+        }
+        
+        // Task 3: Complete chapter
+        if (progress >= 100 && !document.getElementById('task3').classList.contains('completed')) {
+            completeTask('task3');
+            showChapterCompleteReward();
+        }
+        
+        // Task 4: Read sequentially
+        if (pagesRead.length > 0 && pagesRead.every((page, index) => page === index + 1)) {
+            if (!document.getElementById('task4').classList.contains('completed')) {
+                completeTask('task4');
+            }
+        }
+    }
+
+    function completeTask(taskId) {
+        const task = document.getElementById(taskId);
+        if (task && !task.classList.contains('completed')) {
+            task.classList.add('completed');
+            const icon = task.querySelector('i');
+            const status = task.querySelector('span');
+            
+            // Animate completion
+            icon.className = 'fas fa-check-circle text-green-500 text-lg';
+            status.textContent = 'Hoàn thành';
+            status.className = 'text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium';
+            
+            // Add completion animation
+            task.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                task.style.transform = 'scale(1)';
+            }, 300);
+            
+            showAchievement('Nhiệm vụ hoàn thành!');
+        }
+    }
+
+    function checkAchievements() {
+        // Achievement: Read 5 pages in a row
+        if (pagesRead.length >= 5 && !achievements.includes('reader5')) {
+            achievements.push('reader5');
+            showAchievement('Đọc 5 trang liên tiếp');
+        }
+        
+        // Achievement: Read 10 pages
+        if (pagesRead.length >= 10 && !achievements.includes('reader10')) {
+            achievements.push('reader10');
+            showAchievement('Đọc 10 trang');
+        }
+        
+        // Achievement: Speed reader
+        if (pagesRead.length >= 15 && !achievements.includes('speedReader')) {
+            achievements.push('speedReader');
+            showAchievement('Người đọc tốc độ');
+        }
+    }
+
+    function showAchievement(text) {
+        const notification = document.getElementById('achievementNotification');
+        document.getElementById('achievementText').textContent = text;
+        
+        notification.classList.add('show');
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    function showChapterCompleteReward() {
+        setTimeout(() => {
+            const rewardText = `🎉 Chúc mừng! Bạn đã hoàn thành chương và nhận được:
+
+💰 +100 Coins
+⭐ +50 EXP  
+🏆 Thành tựu: Người đọc chăm chỉ
+
+Tiếp tục đọc để nhận thêm phần thưởng!`;
+            
+            alert(rewardText);
+        }, 1000);
+    }
+
+    // Keyboard Shortcuts
+    function handleKeyboard(event) {
+        // Prevent shortcuts when typing in input fields
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        switch(event.key) {
+            case 'ArrowLeft':
+                event.preventDefault();
+                previousPage();
+                break;
+            case 'ArrowRight':
+            case ' ':
+                event.preventDefault();
+                nextPage();
+                break;
+            case 'f':
+            case 'F':
+                event.preventDefault();
+                toggleFullscreen();
+                break;
+            case 'h':
+            case 'H':
+                event.preventDefault();
+                toggleControls();
+                break;
+            case 't':
+            case 'T':
+                event.preventDefault();
+                showTasksModal();
+                break;
+            case 'l':
+            case 'L':
+                event.preventDefault();
+                showChapterListModal();
+                break;
+            case 'a':
+            case 'A':
+                event.preventDefault();
+                toggleAutoScroll();
+                break;
+            case '+':
+            case '=':
+                event.preventDefault();
+                zoomIn();
+                break;
+            case '-':
+                event.preventDefault();
+                zoomOut();
+                break;
+            case 'Escape':
+                event.preventDefault();
+                hideModal('tasksModal');
+                hideModal('chapterListModal');
+                closeAllDropdowns();
+                break;
+            case '1':
+                event.preventDefault();
+                setReadingMode('vertical');
+                break;
+            case '2':
+                event.preventDefault();
+                setReadingMode('horizontal');
+                break;
+            case '3':
+                event.preventDefault();
+                setReadingMode('single');
+                break;
+        }
+    }
+
+    // Reading Timer
+    function startReadingTimer() {
+        setInterval(() => {
+            const readingTime = Math.floor((Date.now() - readingStartTime) / 1000);
+            // Update reading stats if needed
+            
+            // Auto-save progress every 30 seconds
+            if (readingTime % 30 === 0) {
+                saveReadingProgress();
+            }
+        }, 1000);
+    }
+
+    function saveReadingProgress() {
+        const progress = {
+            chapter: 1095,
+            page: currentPage,
+            timestamp: Date.now(),
+            readingMode: readingMode,
+            theme: currentTheme,
+            zoom: zoomLevel
+        };
+        
+        localStorage.setItem('mangaReadingProgress', JSON.stringify(progress));
+    }
+
+    function loadReadingProgress() {
+        const saved = localStorage.getItem('mangaReadingProgress');
+        if (saved) {
+            const progress = JSON.parse(saved);
+            if (progress.chapter === 1095) {
+                currentPage = progress.page || 1;
+                readingMode = progress.readingMode || 'vertical';
+                currentTheme = progress.theme || 'white';
+                zoomLevel = progress.zoom || 100;
+                
+                // Apply loaded settings
+                setReadingMode(readingMode);
+                setTheme(currentTheme);
+                applyZoom();
+                updateProgress();
+            }
+        }
+    }
+
+    // Touch/Swipe Support for Mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    });
+
+    document.addEventListener('touchend', function(e) {
+        if (!touchStartX || !touchStartY) return;
+
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        
+        const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
+
+        // Minimum swipe distance
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+            if (diffX > 0) {
+                // Swipe left - next page
+                nextPage();
+            } else {
+                // Swipe right - previous page
+                previousPage();
+            }
+        }
+
+        touchStartX = 0;
+        touchStartY = 0;
+    });
+
+    // Initialize
+    setTimeout(() => {
+        completeTask('task1');
+        loadReadingProgress();
+        
+        // Show welcome message
+        showAchievement('Chào mừng đến với trình đọc truyện!');
+    }, 1000);
+
+    // Handle page visibility change
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopAutoScroll();
+            saveReadingProgress();
+        }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        applyZoom(); // Reapply zoom on resize
+    });
+</script>
+</body>
+</html>

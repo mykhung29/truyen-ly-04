@@ -1,0 +1,3608 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Đọc Truyện</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="css/layout.css">
+
+    <style>
+        /* Custom Patterns */
+        .pattern-dots {
+            background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .pattern-grid {
+            background-image:
+                linear-gradient(rgba(156, 163, 175, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(156, 163, 175, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .pattern-diagonal {
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(156, 163, 175, 0.1) 10px,
+                    rgba(156, 163, 175, 0.1) 20px);
+        }
+
+        /* Creative Layouts */
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .diamond {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .arrow-right {
+            clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+        }
+
+        /* Story Card Enhancements */
+        .story-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .story-card:hover::before {
+            left: 100%;
+        }
+
+        .story-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Banner Enhancements */
+        .banner-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .featured-manga-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .featured-manga-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+        }
+
+        .manga-rating {
+            background: rgba(255, 193, 7, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .manga-status {
+            background: rgba(40, 167, 69, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Swiper Custom Styles */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #3b82f6;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-top: -20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 1;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: white;
+        }
+
+        /* Tab Styles */
+        .tab-active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .quiz-option.correct {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+
+        .quiz-option.wrong {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+
+        /* Floating Elements */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Pulse Animation */
+        .pulse-custom {
+            animation: pulse-custom 2s infinite;
+        }
+
+        @keyframes pulse-custom {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Creative Shapes */
+        .blob-shape {
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        }
+
+        .wave-shape {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        /* Notification Bell Animation */
+        .bell-ring {
+            animation: bell-ring 1s ease-in-out;
+        }
+
+        @keyframes bell-ring {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(15deg);
+            }
+
+            75% {
+                transform: rotate(-15deg);
+            }
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            background: #3b82f6;
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: bounce 2s infinite;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Card Flip Effect */
+        .flip-card {
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            background: #3b82f6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Section Dividers */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            margin: 2rem 0;
+        }
+
+        /* Banner Decorative Elements */
+        .banner-decoration {
+            position: absolute;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .banner-decoration-1 {
+            top: 10%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        .banner-decoration-2 {
+            bottom: 15%;
+            left: 5%;
+            width: 60px;
+            height: 60px;
+            background: white;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: floating 3s ease-in-out infinite reverse;
+        }
+
+        .banner-decoration-3 {
+            top: 30%;
+            left: 15%;
+            width: 40px;
+            height: 40px;
+            background: white;
+            transform: rotate(45deg);
+            animation: floating 5s ease-in-out infinite;
+        }
+
+        /* Enhanced Featured Cards */
+        .featured-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .featured-manga-card:hover .featured-card-overlay {
+            opacity: 1;
+        }
+
+        /* Enhanced Check-in Widget */
+        .checkin-widget {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checkin-widget::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .checkin-day {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .checkin-day.completed {
+            background: #059669;
+            color: white;
+            box-shadow: 0 0 20px rgba(5, 150, 105, 0.5);
+        }
+
+        .checkin-day.current {
+            background: #dc2626;
+            color: white;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .checkin-day.upcoming {
+            background: rgba(255, 255, 255, 0.3);
+            color: #374151;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(220, 38, 38, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        /* Enhanced Quiz Widget */
+        .quiz-widget {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-widget::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="brain" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M25,10 Q35,5 45,15 Q40,25 25,20 Q15,25 10,15 Q20,5 25,10" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23brain)"/></svg>');
+        }
+
+        .quiz-option {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            transform: translateX(8px) scale(1.02);
+        }
+
+        .quiz-option:hover::before {
+            left: 100%;
+        }
+
+        .quiz-option.selected {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+            border-left: 6px solid #3b82f6;
+            transform: translateX(8px);
+        }
+
+        .quiz-option.correct {
+            background: rgba(34, 197, 94, 0.3);
+            border-color: #22c55e;
+            border-left: 6px solid #22c55e;
+        }
+
+        .quiz-option.wrong {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            border-left: 6px solid #ef4444;
+        }
+
+        .quiz-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .quiz-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 pattern-dots">
+
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col gap-2 md:flex-row items-center justify-between h-fit">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="logo flex items-center">
+                        <div class="logo-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <span>MangaVerse</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="desktop-nav hidden lg:flex items-center space-x-1">
+                    <div class="nav-item relative">
+                        <a href="index.html" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            Trang chủ
+                        </a>
+                    </div>
+
+                    <div class="nav-item relative">
+                        <a href="category.html" class="nav-link">
+                            <i class="fas fa-list"></i>
+                            Thể loại
+                        </a>
+                        <div class="mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-fire mr-2"></i>Phổ biến</h4>
+                                    <a href="category.html" class="mega-menu-link">Action</a>
+                                    <a href="category.html" class="mega-menu-link">Romance</a>
+                                    <a href="category.html" class="mega-menu-link">Comedy</a>
+                                    <a href="category.html" class="mega-menu-link">Drama</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-star mr-2"></i>Đặc sắc</h4>
+                                    <a href="category.html" class="mega-menu-link">Fantasy</a>
+                                    <a href="category.html" class="mega-menu-link">Sci-Fi</a>
+                                    <a href="category.html" class="mega-menu-link">Horror</a>
+                                    <a href="category.html" class="mega-menu-link">Mystery</a>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4><i class="fas fa-globe mr-2"></i>Theo quốc gia</h4>
+                                    <a href="category.html" class="mega-menu-link">🇯🇵 Manga</a>
+                                    <a href="category.html" class="mega-menu-link">🇰🇷 Manhwa</a>
+                                    <a href="category.html" class="mega-menu-link">🇨🇳 Manhua</a>
+                                    <a href="category.html" class="mega-menu-link">🇻🇳 Truyện Việt</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        Mới cập nhật
+                    </a>
+
+                </nav>
+
+                <!-- Search Bar -->
+                <div class="search-container hidden lg:block">
+                    <input type="text" class="search-input" placeholder="Tìm truyện, tác giả..." id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="search-suggestions" id="searchSuggestions">
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>One Piece</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-book"></i>
+                            <span>Naruto</span>
+                        </a>
+                        <a href="#" class="search-suggestion">
+                            <i class="fas fa-user"></i>
+                            <span>Oda Eiichiro</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="flex items-center space-x-2">
+                    <!-- Theme Toggle -->
+                    <button class="action-btn" onclick="toggleTheme()" title="Chuyển đổi chế độ">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <!-- Bookmarks -->
+                    <button class="action-btn" onclick="toggleBookmarks()" title="Bookmark">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <!-- Notifications -->
+                    <button class="action-btn" onclick="toggleNotifications()" title="Thông báo">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+
+                    <!-- User Menu -->
+                    <div class="user-menu">
+                        <div class="user-avatar" onclick="toggleUserMenu()">
+                            <span>U</span>
+                        </div>
+                        <div class="dropdown" id="userDropdown">
+                            <div class="dropdown-header">
+                                <h4>User Name</h4>
+                                <p>Thành viên VIP</p>
+                            </div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Hồ sơ
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-history"></i>
+                                Lịch sử đọc
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-heart"></i>
+                                Yêu thích
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-download"></i>
+                                Đã tải xuống
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Cài đặt
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn lg:hidden" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars" id="mobileMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="flex justify-between items-center mb-8">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span>MangaVerse</span>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="search-container mb-6">
+                <input type="text" class="search-input" placeholder="Tìm truyện, tác giả...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav>
+                <a href="index.html" class="mobile-nav-link">
+                    <i class="fas fa-home"></i>
+                    Trang chủ
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-list"></i>
+                    Thể loại
+                </a>
+                <a href="category.html" class="mobile-nav-link">
+                    <i class="fas fa-clock"></i>
+                    Mới cập nhật
+                </a>
+            </nav>
+
+            <!-- Mobile User Actions -->
+            <div class="mt-8 pt-8 border-t border-gray-200">
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-user"></i>
+                    Hồ sơ
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-bookmark"></i>
+                    Bookmark
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-history"></i>
+                    Lịch sử đọc
+                </a>
+                <a href="#" class="mobile-nav-link">
+                    <i class="fas fa-cog"></i>
+                    Cài đặt
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8 mt-20 md:mt-4">
+        <!-- 1. Enhanced Banner Section -->
+        <section class="my-12">
+            <div class="banner-slide rounded-2xl p-8 text-white relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="banner-decoration banner-decoration-1"></div>
+                <div class="banner-decoration banner-decoration-2"></div>
+                <div class="banner-decoration banner-decoration-3"></div>
+
+                <div class="banner-content">
+                    <div class="text-center mb-8">
+                        <h1 class="text-5xl font-bold mb-4 floating">
+                            <i class="fas fa-book-open mr-4"></i>
+                            Chào mừng đến với Web Đọc Truyện
+                        </h1>
+                        <p class="text-2xl mb-2">Khám phá thế giới truyện tranh đa dạng và phong phú</p>
+                        <p class="text-lg opacity-90">Hơn 10,000+ truyện tranh chất lượng cao đang chờ bạn khám phá</p>
+                    </div>
+
+                    <!-- Enhanced Banner Slider -->
+                    <div class="swiper banner-swiper">
+                        <div class="swiper-wrapper">
+                            <!-- Slide 1 -->
+                            <div class="swiper-slide">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                                    <!-- Featured Manga Highlight -->
+                                    <div class="lg:col-span-2">
+                                        <div class="featured-manga-card rounded-2xl p-6 relative">
+                                            <div class="featured-card-overlay rounded-2xl"></div>
+                                            <div class="relative z-10">
+                                                <div class="flex flex-col md:flex-row items-center gap-6">
+                                                    <div class="flex-shrink-0">
+                                                        <img src="images/truyen1.jpg" alt="One Piece Featured"
+                                                            class="w-32 h-40 object-cover rounded-lg shadow-lg">
+                                                        <div
+                                                            class="manga-rating text-black px-2 py-1 rounded-full text-xs font-bold mt-2 inline-block">
+                                                            <i class="fas fa-star mr-1"></i>9.8/10
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <h3 class="text-3xl font-bold mb-3">One Piece</h3>
+                                                        <p class="text-lg mb-4 opacity-90">Cuộc phiêu lưu tìm kiếm kho
+                                                            báu huyền thoại của Monkey D. Luffy và băng hải tặc Mũ Rơm
+                                                        </p>
+                                                        <div class="flex items-center gap-4 mb-4">
+                                                            <span
+                                                                class="manga-status text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                                                <i class="fas fa-play mr-1"></i>Đang cập nhật
+                                                            </span>
+                                                            <span class="text-sm opacity-80">
+                                                                <i class="fas fa-book mr-1"></i>Chương 1095
+                                                            </span>
+                                                            <span class="text-sm opacity-80">
+                                                                <i class="fas fa-eye mr-1"></i>2.5M lượt xem
+                                                            </span>
+                                                        </div>
+                                                        <a href="detail.html">
+                                                            <button
+                                                                class="bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105">
+                                                                <i class="fas fa-play mr-2"></i>Đọc ngay</a>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quick Access -->
+                                    <div class="space-y-4">
+                                        <h4 class="text-xl font-bold mb-4">
+                                            <i class="fas fa-fire mr-2"></i>Trending
+                                        </h4>
+
+                                        <div class="featured-manga-card rounded-lg p-4 relative">
+                                            <a href="detail.html">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="images/truyen12.jpg" alt="Naruto"
+                                                        class="w-12 h-16 object-cover rounded">
+                                                    <div>
+                                                        <h5 class="font-semibold">Naruto</h5>
+                                                        <p class="text-sm opacity-80">Chương 700</p>
+                                                    </div>
+                                                    <div class="ml-auto text-yellow-400">
+                                                        <i class="fas fa-crown"></i>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+
+                                        <div class="featured-manga-card rounded-lg p-4 relative">
+                                            <a href="detail.html">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="images/truyen3.jpg" alt="Dragon Ball"
+                                                        class="w-12 h-16 object-cover rounded">
+                                                    <div>
+                                                        <h5 class="font-semibold">Dragon Ball</h5>
+                                                        <p class="text-sm opacity-80">Chương 519</p>
+                                                    </div>
+                                                    <div class="ml-auto text-orange-400">
+                                                        <i class="fas fa-medal"></i>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="featured-manga-card rounded-lg p-4 relative">
+                                            <a href="detail.html">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="images/truyen2.jpg" alt="Attack on Titan"
+                                                        class="w-12 h-16 object-cover rounded">
+                                                    <div>
+                                                        <h5 class="font-semibold">Attack on Titan</h5>
+                                                        <p class="text-sm opacity-80">Chương 139</p>
+                                                    </div>
+                                                    <div class="ml-auto text-red-400">
+                                                        <i class="fas fa-heart"></i>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 2 -->
+                            <div class="swiper-slide">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                                    <div class="lg:col-span-2">
+                                        <div class="featured-manga-card rounded-2xl p-6 relative">
+                                            <div class="featured-card-overlay rounded-2xl"></div>
+                                            <div class="relative z-10">
+                                                <div class="flex flex-col md:flex-row items-center gap-6">
+                                                    <div class="flex-shrink-0">
+                                                        <img src="images/truyen4.jpg" alt="Demon Slayer Featured"
+                                                            class="w-32 h-40 object-cover rounded-lg shadow-lg">
+                                                        <div
+                                                            class="manga-rating text-black px-2 py-1 rounded-full text-xs font-bold mt-2 inline-block">
+                                                            <i class="fas fa-star mr-1"></i>9.5/10
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                        <h3 class="text-3xl font-bold mb-3">Demon Slayer</h3>
+                                                        <p class="text-lg mb-4 opacity-90">Hành trình của Tanjiro trong
+                                                            việc tiêu diệt quỷ dữ và cứu em gái</p>
+                                                        <div class="flex items-center gap-4 mb-4">
+                                                            <span
+                                                                class="manga-status text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                                                <i class="fas fa-check mr-1"></i>Hoàn thành
+                                                            </span>
+                                                            <span class="text-sm opacity-80">
+                                                                <i class="fas fa-book mr-1"></i>Chương 205
+                                                            </span>
+                                                            <span class="text-sm opacity-80">
+                                                                <i class="fas fa-eye mr-1"></i>1.8M lượt xem
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            class="bg-white text-purple-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105">
+                                                            <i class="fas fa-play mr-2"></i>Đọc ngay
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <h4 class="text-xl font-bold mb-4">
+                                            <i class="fas fa-clock mr-2"></i>Mới cập nhật
+                                        </h4>
+                                        <div class="featured-manga-card rounded-lg p-4 relative">
+                                            <a href="detail.html">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="images/truyen6.jpg" alt="My Hero Academia"
+                                                        class="w-12 h-16 object-cover rounded">
+                                                    <div>
+                                                        <h5 class="font-semibold">My Hero Academia</h5>
+                                                        <p class="text-sm opacity-80">Chương 403</p>
+                                                    </div>
+                                                    <div class="ml-auto text-green-400">
+                                                        <i class="fas fa-clock"></i>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                        <div class="featured-manga-card rounded-lg p-4 relative">
+                                            <a href="detail.html">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="images/truyen7.jpg" alt="Jujutsu Kaisen"
+                                                        class="w-12 h-16 object-cover rounded">
+                                                    <div>
+                                                        <h5 class="font-semibold">Jujutsu Kaisen</h5>
+                                                        <p class="text-sm opacity-80">Chương 245</p>
+                                                    </div>
+                                                    <div class="ml-auto text-blue-400">
+                                                        <i class="fas fa-star"></i>
+                                                    </div>
+                                                </div>
+                                            </a>
+
+                                        </div>
+                                        <div class="featured-manga-card rounded-lg p-4 relative">
+                                            <a href="detail.html">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="images/truyen8.jpg" alt="Chainsaw Man"
+                                                        class="w-12 h-16 object-cover rounded">
+                                                    <div>
+                                                        <h5 class="font-semibold">Chainsaw Man</h5>
+                                                        <p class="text-sm opacity-80">Chương 150</p>
+                                                    </div>
+                                                    <div class="ml-auto text-purple-400">
+                                                        <i class="fas fa-bolt"></i>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced Pagination -->
+                        <div class="swiper-pagination mt-8"></div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 2. Enhanced Điểm danh & Quiz -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+            <!-- Enhanced Daily Check-in Widget -->
+            <div data-aos="fade-right">
+                <div class="checkin-widget rounded-2xl p-6 text-gray-800 relative overflow-hidden">
+                    <div class="absolute inset-0 pattern-diagonal opacity-20"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold flex items-center">
+                                <i class="fas fa-gift mr-3 text-3xl"></i>
+                                Điểm Danh Hàng Ngày
+                            </h3>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold">1,250</div>
+                                <div class="text-sm opacity-80">Coins</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <p class="text-lg mb-4">Đăng nhập mỗi ngày để nhận phần thưởng!</p>
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="checkin-day completed">1</div>
+                                    <div class="checkin-day completed">2</div>
+                                    <div class="checkin-day completed">3</div>
+                                    <div class="checkin-day completed">4</div>
+                                    <div class="checkin-day current">5</div>
+                                    <div class="checkin-day upcoming">6</div>
+                                    <div class="checkin-day upcoming">7</div>
+                                </div>
+                                <div class="flex justify-between text-xs opacity-70 mb-4">
+                                    <span>T2</span>
+                                    <span>T3</span>
+                                    <span>T4</span>
+                                    <span>T5</span>
+                                    <span>T6</span>
+                                    <span>T7</span>
+                                    <span>CN</span>
+                                </div>
+                                <div class="bg-white/20 rounded-full h-2 mb-2">
+                                    <div class="bg-green-500 h-full rounded-full" style="width: 71%"></div>
+                                </div>
+                                <p class="text-sm">Ngày 5/7 - Streak: 5 ngày</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-6xl mb-4 floating">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <button
+                                    class="bg-gray-800 text-yellow-400 px-8 py-4 rounded-xl font-bold hover:bg-gray-700 transition-all transform hover:scale-105 pulse-custom shadow-lg">
+                                    <i class="fas fa-gift mr-2"></i>
+                                    Nhận Thưởng
+                                </button>
+                                <div class="mt-3 text-sm">
+                                    <div class="font-bold">+50 Coins</div>
+                                    <div class="opacity-80">+10 EXP</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Quiz Widget -->
+            <div data-aos="fade-left">
+                <div class="quiz-widget rounded-2xl p-6 text-white relative overflow-hidden h-full">
+                    <div class="absolute inset-0 pattern-grid opacity-20"></div>
+                    <div class="relative z-10 h-full flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-brain mr-3"></i>
+                                Quiz Nhận Quà
+                            </h3>
+                            <div class="text-right">
+                                <div class="text-lg font-bold" id="quiz-score">0/5</div>
+                                <div class="text-xs opacity-80">Điểm</div>
+                            </div>
+                        </div>
+
+                        <div class="quiz-progress mb-4">
+                            <div class="quiz-progress-bar" id="quiz-progress" style="width: 20%"></div>
+                        </div>
+
+                        <div id="quiz-container" class="flex-1">
+                            <div class="quiz-question">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm opacity-80" id="question-number">Câu 1/5</span>
+                                    <span class="text-sm opacity-80" id="question-timer">⏱️ 30s</span>
+                                </div>
+                                <p class="text-lg mb-4 font-medium" id="question-text">Ai là tác giả của One Piece?</p>
+                                <div class="space-y-3" id="quiz-options">
+                                    <div class="quiz-option p-4 rounded-xl bg-white/10" data-answer="0">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3 text-sm font-bold">
+                                                A</div>
+                                            <span>Eiichiro Oda</span>
+                                        </div>
+                                    </div>
+                                    <div class="quiz-option p-4 rounded-xl bg-white/10" data-answer="1">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3 text-sm font-bold">
+                                                B</div>
+                                            <span>Masashi Kishimoto</span>
+                                        </div>
+                                    </div>
+                                    <div class="quiz-option p-4 rounded-xl bg-white/10" data-answer="2">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center mr-3 text-sm font-bold">
+                                                C</div>
+                                            <span>Akira Toriyama</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-result hidden mt-4">
+                                <div class="text-center">
+                                    <div class="text-6xl mb-4" id="result-icon">🎉</div>
+                                    <p class="text-xl font-bold mb-2" id="result-text">Chính xác!</p>
+                                    <p class="text-sm opacity-80 mb-4" id="result-detail">Bạn đã trả lời đúng!</p>
+                                    <button id="next-quiz"
+                                        class="bg-white/20 hover:bg-white/30 px-8 py-3 rounded-xl transition-colors font-semibold">
+                                        <i class="fas fa-arrow-right mr-2"></i>
+                                        Câu tiếp theo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 3. Truyện Nổi Bật -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                    <i class="fas fa-star mr-3 text-yellow-500"></i>
+                    Truyện Nổi Bật
+                </h2>
+                <div class="arrow-right bg-blue-500 text-white px-4 py-2 text-sm">
+                    <i class="fas fa-fire mr-2"></i>
+                    HOT
+                </div>
+            </div>
+            <div class="swiper featured-swiper relative">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen2.jpg" alt="Truyện nổi bật 1"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Thám Tử Lừng Danh Conan
+                                    </h3>
+                                </a>
+                                <p class="text-gray-600 text-sm mb-2">Chương 1100</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <span class="text-gray-500 text-sm ml-2">9.5/10</span>
+                                    </div>
+                                    <i class="fas fa-bookmark text-gray-400 hover:text-blue-500 cursor-pointer"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen1.jpg" alt="Truyện nổi bật 2"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Doraemon</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm mb-2">Chương 1345</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <span class="text-gray-500 text-sm ml-2">9.8/10</span>
+                                    </div>
+                                    <i class="fas fa-bookmark text-gray-400 hover:text-blue-500 cursor-pointer"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen13.jpg" alt="Truyện nổi bật 3"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Bleach</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm mb-2">Chương 686</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="far fa-star text-yellow-500"></i>
+                                        <span class="text-gray-500 text-sm ml-2">9.2/10</span>
+                                    </div>
+                                    <i class="fas fa-bookmark text-gray-400 hover:text-blue-500 cursor-pointer"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen3.jpg" alt="Truyện nổi bật 4"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Hunter x Hunter</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm mb-2">Chương 400</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <span class="text-gray-500 text-sm ml-2">9.7/10</span>
+                                    </div>
+                                    <i class="fas fa-bookmark text-gray-400 hover:text-blue-500 cursor-pointer"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen14.jpg" alt="Truyện nổi bật 5"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Fullmetal Alchemist</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm mb-2">Chương 108</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <span class="text-gray-500 text-sm ml-2">9.9/10</span>
+                                    </div>
+                                    <i class="fas fa-bookmark text-gray-400 hover:text-blue-500 cursor-pointer"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen4.jpg" alt="Truyện nổi bật 6"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Death Note</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm mb-2">Chương 108</p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                        <span class="text-gray-500 text-sm ml-2">9.6/10</span>
+                                    </div>
+                                    <i class="fas fa-bookmark text-gray-400 hover:text-blue-500 cursor-pointer"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 4. Bảng xếp hạng & Thử thách đọc truyện -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+            <!-- Leaderboard Widget -->
+            <div>
+                <div class="bg-indigo-600 rounded-2xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute inset-0 pattern-dots opacity-20"></div>
+                    <div class="relative z-10">
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 flex items-center">
+                                <i class="fas fa-trophy mr-3"></i>
+                                Bảng Xếp Hạng
+                            </h3>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between bg-white/20 rounded-lg p-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-medal text-yellow-400 text-xl mr-3"></i>
+                                    <div>
+                                        <p class="font-semibold">MangaLover2024</p>
+                                        <p class="text-sm opacity-80">1,250 chương</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold">15,000 điểm</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-white/20 rounded-lg p-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-medal text-gray-300 text-xl mr-3"></i>
+                                    <div>
+                                        <p class="font-semibold">AnimeOtaku</p>
+                                        <p class="text-sm opacity-80">980 chương</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold">12,500 điểm</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-white/20 rounded-lg p-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-medal text-orange-400 text-xl mr-3"></i>
+                                    <div>
+                                        <p class="font-semibold">TruyenTranh123</p>
+                                        <p class="text-sm opacity-80">750 chương</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold">9,800 điểm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reading Challenge Widget -->
+            <div>
+                <div class="bg-orange-500 rounded-2xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute inset-0 pattern-grid opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-target mr-3"></i>
+                            Thử Thách Đọc Truyện
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm mb-2">Mục tiêu: Đọc 20 chương trong tháng</p>
+                                <div class="bg-white/20 rounded-full h-3 mb-2">
+                                    <div class="progress-bar h-full rounded-full" style="width: 65%"></div>
+                                </div>
+                                <p class="text-xs opacity-90">13/20 chương hoàn thành</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl mb-2">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <p class="text-sm">Badge "Độc giả tận tụy"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 5. Top Truyện Theo Tuần/Tháng -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                        <i class="fas fa-trophy mr-3 text-yellow-500"></i>
+                        Top Truyện
+                    </h2>
+
+                    <!-- Mũi tên xem tất cả -->
+                    <a href="#"
+                        class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-2xl "></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex space-x-4 mb-6">
+                <button
+                    class="tab-btn tab-active px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center"
+                    data-tab="week">
+                    <i class="fas fa-calendar-week mr-2"></i>
+                    Tuần này
+                </button>
+                <button
+                    class="tab-btn px-6 py-3 rounded-lg font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all duration-300 flex items-center"
+                    data-tab="month">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    Tháng này
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="week-content" class="tab-content">
+                <div class="swiper top-week-swiper relative">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                    <div class="relative">
+                                        <img src="images/truyen3.jpg" alt="Top tuần 1"
+                                            class="w-full aspect-[3/4] object-cover">
+                                </a>
+                                <div
+                                    class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold pulse-custom">
+                                    <i class="fas fa-crown mr-1"></i>#1
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Jujutsu Kaisen</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 245</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <div class="relative">
+                                    <img src="images/truyen4.jpg" alt="Top tuần 2"
+                                        class="w-full aspect-[3/4] object-cover">
+                            </a>
+                            <div
+                                class="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                #2</div>
+                        </div>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Chainsaw Man</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 150</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <div class="relative">
+                                <img src="images/truyen5.jpg" alt="Top tuần 3" class="w-full aspect-[3/4] object-cover">
+                        </a>
+                        <div
+                            class="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                            #3</div>
+                    </div>
+                    <div class="p-2">
+                        <a href="detail.html">
+                            <h3 class="story-title font-semibold text-lg line-clamp-1">Tokyo Revengers</h3>
+                        </a>
+                        <p class="text-gray-600 text-sm">Chương 278</p>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen6.jpg" alt="Top tuần 4" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        #4</div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Spy x Family</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 95</p>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen7.jpg" alt="Top tuần 5" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div
+                        class="absolute top-2 left-2 bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        #5</div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Black Clover</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 375</p>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen8.jpg" alt="Top tuần 6" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        #6</div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Boruto</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 85</p>
+                </div>
+            </div>
+            </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            </div>
+            </div>
+
+            <div id="month-content" class="tab-content hidden">
+                <div class="swiper top-month-swiper relative">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                    <div class="relative">
+                                        <img src="images/truyen9.jpg" alt="Top tháng 1"
+                                            class="w-full aspect-[3/4] object-cover">
+                                </a>
+                                <div
+                                    class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                    <i class="fas fa-crown mr-1"></i>#1
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">One Piece</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 1095</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <div class="relative">
+                                    <img src="images/truyen10.jpg" alt="Top tháng 2"
+                                        class="w-full aspect-[3/4] object-cover">
+                            </a>
+                            <div
+                                class="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                #2</div>
+                        </div>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Naruto</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 700</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <div class="relative">
+                                <img src="images/truyen11.jpg" alt="Top tháng 3"
+                                    class="w-full aspect-[3/4] object-cover">
+                        </a>
+                        <div
+                            class="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                            #3</div>
+                    </div>
+                    <div class="p-2">
+                        <a href="detail.html">
+                            <h3 class="story-title font-semibold text-lg line-clamp-1">Dragon Ball Super
+                            </h3>
+                        </a>
+                        <p class="text-gray-600 text-sm">Chương 98</p>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen12.jpg" alt="Top tháng 4" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        #4</div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Attack on Titan</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 139</p>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen13.jpg" alt="Top tháng 5" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div
+                        class="absolute top-2 left-2 bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        #5</div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Demon Slayer</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 205</p>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen14.jpg" alt="Top tháng 6" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        #6</div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">My Hero Academia</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 403</p>
+                </div>
+            </div>
+            </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 6. Truyện Màu -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <div class="flex items-center justify-between mb-6 gap-4">
+                        <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                            <i class="fas fa-palette mr-3 text-green-500"></i>
+                            Truyện Màu
+                        </h2>
+
+                        <a href="#"
+                            class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-chevron-right text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="swiper color-manga-swiper relative">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen5.jpg" alt="Truyện màu 1"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Solo Leveling</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 200</p>
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-palette mr-1"></i>Màu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen4.jpg" alt="Truyện màu 2"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Tower of God</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 600</p>
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-palette mr-1"></i>Màu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen3.jpg" alt="Truyện màu 3"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">The God of High School
+                                    </h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 570</p>
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-palette mr-1"></i>Màu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen12.jpg" alt="Truyện màu 4"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Noblesse</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 544</p>
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-palette mr-1"></i>Màu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen6.jpg" alt="Truyện màu 5"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Lookism</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 480</p>
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-palette mr-1"></i>Màu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen1.jpg" alt="Truyện màu 6"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Unordinary</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 320</p>
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-palette mr-1"></i>Màu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 7. Truyện Trắng Đen -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                        <i class="fas fa-circle mr-3 text-gray-600"></i>
+                        Truyện Trắng Đen
+                    </h2>
+
+                    <a href="#"
+                        class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </a>
+                </div>
+
+            </div>
+            <div class="swiper bw-manga-swiper relative">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen8.jpg" alt="Truyện trắng đen 1"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Berserk</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 374</p>
+                                <span
+                                    class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-circle mr-1"></i>Trắng đen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen9.jpg" alt="Truyện trắng đen 2"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Vagabond</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 327</p>
+                                <span
+                                    class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-circle mr-1"></i>Trắng đen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen14.jpg" alt="Truyện trắng đen 3"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Monster</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 162</p>
+                                <span
+                                    class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-circle mr-1"></i>Trắng đen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen10.jpg" alt="Truyện trắng đen 4"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">20th Century Boys</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 249</p>
+                                <span
+                                    class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-circle mr-1"></i>Trắng đen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen11.jpg" alt="Truyện trắng đen 5"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Pluto</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 65</p>
+                                <span
+                                    class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-circle mr-1"></i>Trắng đen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen13.jpg" alt="Truyện trắng đen 6"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Real</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 15</p>
+                                <span
+                                    class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-circle mr-1"></i>Trắng đen
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 8. Thể loại truyện hot -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                        <i class="fas fa-fire mr-3 text-red-500"></i>
+                        Thể Loại Hot
+                    </h2>
+
+                    <a href="#"
+                        class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </a>
+                </div>
+
+            </div>
+            <div class="swiper hot-genre-swiper relative">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen11.jpg" alt="Hot genre 1"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Tales of Demons and Gods
+                                    </h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 500</p>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-fire mr-1"></i>Action
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen3.jpg" alt="Hot genre 2"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Battle Through the
+                                        Heavens
+                                    </h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 1700</p>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-fire mr-1"></i>Fantasy
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen7.jpg" alt="Hot genre 3"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Martial Peak</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 3000</p>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-fire mr-1"></i>Martial Arts
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen9.jpg" alt="Hot genre 4"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Apotheosis</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 1200</p>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-fire mr-1"></i>Adventure
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen8.jpg" alt="Hot genre 5"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Star Martial God
+                                        Technique
+                                    </h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 600</p>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-fire mr-1"></i>Cultivation
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen2.jpg" alt="Hot genre 6"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Against the Gods</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 1800</p>
+                                <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-fire mr-1"></i>Romance
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 9. Thể loại chuyển sinh -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                        <i class="fas fa-sync-alt mr-3 text-blue-500"></i>
+                        Thể Loại Chuyển Sinh
+                    </h2>
+
+                    <a href="#"
+                        class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </a>
+                </div>
+
+            </div>
+            <div class="swiper isekai-swiper relative">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen1.jpg" alt="Chuyển sinh 1"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">That Time I Got
+                                        Reincarnated
+                                        as a Slime</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 120</p>
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-sync-alt mr-1"></i>Chuyển sinh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen13.jpg" alt="Chuyển sinh 2"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Re:Zero</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 90</p>
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-sync-alt mr-1"></i>Chuyển sinh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen11.jpg" alt="Chuyển sinh 3"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Overlord</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 80</p>
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-sync-alt mr-1"></i>Chuyển sinh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen12.jpg" alt="Chuyển sinh 4"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">The Rising of the Shield
+                                        Hero
+                                    </h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 100</p>
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-sync-alt mr-1"></i>Chuyển sinh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen9.jpg" alt="Chuyển sinh 5"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Konosuba</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 70</p>
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-sync-alt mr-1"></i>Chuyển sinh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <img src="images/truyen3.jpg" alt="Chuyển sinh 6"
+                                    class="w-full aspect-[3/4] object-cover"></a>
+                            <div class="p-2">
+                                <a href="detail.html">
+                                    <h3 class="story-title font-semibold text-lg line-clamp-1">Mushoku Tensei</h3>
+                                </a>
+                                <p class="text-gray-600 text-sm">Chương 95</p>
+                                <span
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mt-2">
+                                    <i class="fas fa-sync-alt mr-1"></i>Chuyển sinh
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Blog/Articles Section -->
+        <section class="mt-12 mb-12" data-aos="fade-up">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-bold gradient-text flex items-center">
+                        <i class="fas fa-newspaper mr-3 text-blue-500"></i>
+                        Bài Viết / Blog Về Truyện
+                    </h2>
+                    <a href="#"
+                        class="text-blue-600 hover:text-blue-800 transition-colors text-sm font-semibold flex items-center">
+                        Xem tất cả
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Blog Post 1 -->
+                    <div class="blog-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                        data-aos="fade-up" data-aos-delay="100">
+                        <div class="relative">
+                            <img src="images/truyenthumb4.jpg" alt="Phân tích Gear 5" class="w-full h-48 object-cover">
+                            <div
+                                class="absolute top-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                Phân tích
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                <a href="#">Phân tích chi tiết về Gear 5 và sức mạnh thức tỉnh của Luffy</a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                Gear 5 là hình thái mạnh nhất của Luffy cho đến nay, được thức tỉnh sau trận chiến với
+                                Kaido.
+                                Bài viết này sẽ đi sâu vào phân tích nguồn gốc và ý nghĩa của sức mạnh này...
+                            </p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-xs">
+                                        OP
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold">OnePieceScholar</p>
+                                        <p class="text-xs text-gray-500">15/05/2023</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                    <span><i class="fas fa-eye mr-1"></i>1.2K</span>
+                                    <span><i class="fas fa-comment mr-1"></i>45</span>
+                                </div>
+                            </div>
+                            <a href="#"
+                                class="inline-block text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                Đọc tiếp <i class="fas fa-long-arrow-alt-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Blog Post 2 -->
+                    <div class="blog-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                        data-aos="fade-up" data-aos-delay="200">
+                        <div class="relative">
+                            <img src="images/truyenthumb1.jpg" alt="Lịch sử One Piece" class="w-full h-48 object-cover">
+                            <div
+                                class="absolute top-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                Lịch sử
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                <a href="#">25 năm One Piece: Hành trình của Eiichiro Oda và tác phẩm để đời</a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                Nhìn lại 25 năm hành trình sáng tạo One Piece của Eiichiro Oda, từ những ngày đầu khó
+                                khăn
+                                đến khi trở thành manga bán chạy nhất mọi thời đại với hơn 500 triệu bản...
+                            </p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-semibold text-xs">
+                                        MH
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold">MangaHistorian</p>
+                                        <p class="text-xs text-gray-500">02/04/2023</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                    <span><i class="fas fa-eye mr-1"></i>3.5K</span>
+                                    <span><i class="fas fa-comment mr-1"></i>87</span>
+                                </div>
+                            </div>
+                            <a href="#"
+                                class="inline-block text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                Đọc tiếp <i class="fas fa-long-arrow-alt-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Blog Post 3 -->
+                    <div class="blog-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                        data-aos="fade-up" data-aos-delay="300">
+                        <div class="relative">
+                            <img src="images/truyenthumb3.jpg" alt="Dự đoán One Piece" class="w-full h-48 object-cover">
+                            <div
+                                class="absolute top-3 left-3 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                Dự đoán
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                <a href="#">5 dự đoán về kết thúc của One Piece và bí mật của kho báu</a>
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                Khi One Piece đang tiến gần đến hồi kết, nhiều giả thuyết về kho báu huyền thoại và
+                                số phận của Luffy đã được đưa ra. Bài viết này tổng hợp 5 dự đoán thuyết phục nhất...
+                            </p>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-xs">
+                                        PT
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-semibold">PirateTheories</p>
+                                        <p class="text-xs text-gray-500">28/05/2023</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs text-gray-500">
+                                    <span><i class="fas fa-eye mr-1"></i>5.8K</span>
+                                    <span><i class="fas fa-comment mr-1"></i>156</span>
+                                </div>
+                            </div>
+                            <a href="#"
+                                class="inline-block text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                Đọc tiếp <i class="fas fa-long-arrow-alt-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Featured Article -->
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="mt-8 rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                        data-aos="fade-up">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/3 relative">
+                                <img src="images/truyen1.jpg" alt="Phỏng vấn Eiichiro Oda"
+                                    class="w-full h-full object-cover">
+                                <div
+                                    class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                    Đặc biệt
+                                </div>
+                            </div>
+                            <div class="md:w-2/3 p-6">
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <span
+                                        class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Phỏng
+                                        vấn</span>
+                                    <span
+                                        class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Độc
+                                        quyền</span>
+                                </div>
+                                <h3 class="font-bold text-xl md:text-2xl mb-3 hover:text-blue-600 transition-colors">
+                                    <a href="#">Phỏng vấn độc quyền: Eiichiro Oda tiết lộ về hành trình sáng tạo One
+                                        Piece</a>
+                                </h3>
+                                <p class="text-gray-600 mb-4 line-clamp-3">
+                                    Trong cuộc phỏng vấn hiếm hoi này, Eiichiro Oda chia sẻ về nguồn cảm hứng, quá trình
+                                    sáng tạo và
+                                    những thách thức khi vẽ One Piece trong suốt 25 năm qua. Ông cũng tiết lộ một số
+                                    thông
+                                    tin thú vị
+                                    về cách phát triển nhân vật và kế hoạch cho hồi kết của series...
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-semibold text-xs">
+                                            JM
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold">JumpMagazine</p>
+                                            <p class="text-xs text-gray-500">10/06/2023 • 15 phút đọc</p>
+                                        </div>
+                                    </div>
+                                    <a href="#"
+                                        class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
+                                        Đọc bài viết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                        data-aos="fade-up">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/3 relative">
+                                <img src="images/truyen7.jpg" alt="Phỏng vấn Eiichiro Oda"
+                                    class="w-full h-full object-cover">
+                                <div
+                                    class="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                    Đặc biệt
+                                </div>
+                            </div>
+                            <div class="md:w-2/3 p-6">
+                                <div class="flex items-center space-x-2 mb-3">
+                                    <span
+                                        class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Phỏng
+                                        vấn</span>
+                                    <span
+                                        class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Độc
+                                        quyền</span>
+                                </div>
+                                <h3 class="font-bold text-xl md:text-2xl mb-3 hover:text-blue-600 transition-colors">
+                                    <a href="#">Dragon ball: Dự đoán thời gian và nhân vật xuất hiện trong tập đặc biệt
+                                        kỷ niệm 10 năm</a>
+                                </h3>
+                                <p class="text-gray-600 mb-4 line-clamp-3">
+                                    Trong cuộc phỏng vấn hiếm hoi này, Eiichiro Oda chia sẻ về nguồn cảm hứng, quá trình
+                                    sáng tạo và
+                                    những thách thức khi vẽ One Piece trong suốt 25 năm qua. Ông cũng tiết lộ một số
+                                    thông
+                                    tin thú vị
+                                    về cách phát triển nhân vật và kế hoạch cho hồi kết của series...
+                                </p>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div
+                                            class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-semibold text-xs">
+                                            JM
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold">JumpMagazine</p>
+                                            <p class="text-xs text-gray-500">10/06/2023 • 15 phút đọc</p>
+                                        </div>
+                                    </div>
+                                    <a href="#"
+                                        class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
+                                        Đọc bài viết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Video Articles -->
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-video mr-2 text-red-500"></i>
+                        Video Phân Tích
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                            data-aos="fade-up" data-aos-delay="100">
+                            <div class="relative">
+                                <img src="images/truyenthumb7.jpg" alt="Video phân tích"
+                                    class="w-full h-36 object-cover">
+                                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                        <i class="fas fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                    12:45
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h4 class="font-semibold text-sm line-clamp-2 mb-1">Phân tích chi tiết về Haki và các
+                                    loại Haki trong One Piece</h4>
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span>OnePieceTheory</span>
+                                    <span>15K lượt xem</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                            data-aos="fade-up" data-aos-delay="200">
+                            <div class="relative">
+                                <img src="images/truyenthumb6.jpg" alt="Video phân tích"
+                                    class="w-full h-36 object-cover">
+                                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                        <i class="fas fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                    18:32
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h4 class="font-semibold text-sm line-clamp-2 mb-1">Lịch sử của Void Century và bí mật
+                                    của Poneglyph</h4>
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span>MangaExplained</span>
+                                    <span>23K lượt xem</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                            data-aos="fade-up" data-aos-delay="300">
+                            <div class="relative">
+                                <img src="images/truyenthumb5.jpg" alt="Video phân tích"
+                                    class="w-full h-36 object-cover">
+                                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                        <i class="fas fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                    21:15
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h4 class="font-semibold text-sm line-clamp-2 mb-1">Phân tích nhân vật: Sự phát triển
+                                    của Roronoa Zoro</h4>
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span>AnimeDeep</span>
+                                    <span>19K lượt xem</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-card rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300"
+                            data-aos="fade-up" data-aos-delay="400">
+                            <div class="relative">
+                                <img src="images/truyenthumb2.jpg" alt="Video phân tích"
+                                    class="w-full h-36 object-cover">
+                                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                    <div class="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                        <i class="fas fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div
+                                    class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                    15:48
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <h4 class="font-semibold text-sm line-clamp-2 mb-1">Top 10 trận chiến hay nhất trong One
+                                    Piece</h4>
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span>TopManga</span>
+                                    <span>32K lượt xem</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Discussions -->
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-users mr-2 text-green-500"></i>
+                        Thảo Luận Cộng Đồng
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="discussion-card p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                            data-aos="fade-up">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-xs">
+                                        LF
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <h4 class="font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                            <a href="#">Thảo luận: Ai sẽ là thành viên cuối cùng của băng Mũ Rơm?</a>
+                                        </h4>
+                                        <span
+                                            class="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs font-semibold">Hot</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                                        Với việc One Piece đang tiến gần đến hồi kết, nhiều người cho rằng sẽ có thêm
+                                        một thành viên cuối cùng
+                                        gia nhập băng Mũ Rơm. Các ứng cử viên tiềm năng là Yamato, Carrot, hoặc thậm chí
+                                        là...
+                                    </p>
+                                    <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <div class="flex items-center space-x-4">
+                                            <span>Bởi LuffyFan123</span>
+                                            <span>2 ngày trước</span>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-comment mr-1"></i>156 bình luận</span>
+                                            <span><i class="fas fa-heart mr-1"></i>45 thích</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="discussion-card p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                            data-aos="fade-up">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-semibold text-xs">
+                                        ZF
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <h4 class="font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                            <a href="#">Dự đoán: Sức mạnh thật sự của thanh kiếm Enma</a>
+                                        </h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                                        Sau khi Zoro làm chủ được Enma, nhiều người cho rằng thanh kiếm này còn ẩn chứa
+                                        nhiều bí mật và sức mạnh
+                                        chưa được khai phá. Liệu nó có liên quan đến Ryuma và Wano như thế nào?
+                                    </p>
+                                    <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <div class="flex items-center space-x-4">
+                                            <span>Bởi ZoroFanboy</span>
+                                            <span>3 ngày trước</span>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-comment mr-1"></i>89 bình luận</span>
+                                            <span><i class="fas fa-heart mr-1"></i>32 thích</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="discussion-card p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                            data-aos="fade-up">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold text-xs">
+                                        RL
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <h4 class="font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+                                            <a href="#">Thảo luận: Bí mật về D. và mối liên hệ với Ancient Kingdom</a>
+                                        </h4>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                                        Chữ D. trong tên của nhiều nhân vật quan trọng như Monkey D. Luffy, Gol D.
+                                        Roger, Marshall D. Teach...
+                                        có ý nghĩa gì? Liệu nó có liên quan đến Ancient Kingdom và Void Century không?
+                                    </p>
+                                    <div class="flex items-center justify-between text-xs text-gray-500">
+                                        <div class="flex items-center space-x-4">
+                                            <span>Bởi RogerLegacy</span>
+                                            <span>5 ngày trước</span>
+                                        </div>
+                                        <div class="flex items-center space-x-4">
+                                            <span><i class="fas fa-comment mr-1"></i>124 bình luận</span>
+                                            <span><i class="fas fa-heart mr-1"></i>67 thích</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-6">
+                        <a href="#"
+                            class="inline-block px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-semibold transition-colors">
+                            <i class="fas fa-comments mr-2"></i>
+                            Xem tất cả thảo luận
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+
+        <!-- 10. Truyện sắp cập nhật -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                        <i class="fas fa-clock mr-3 text-orange-500"></i>
+                        Truyện Sắp Cập Nhật
+                    </h2>
+
+                    <a href="#"
+                        class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </a>
+                </div>
+
+                <div class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">
+                    <i class="fas fa-bell mr-1"></i>
+                    Sắp có
+                </div>
+            </div>
+            <div class="swiper upcoming-swiper relative">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                                <div class="relative">
+                                    <img src="images/truyen14.jpg" alt="Sắp cập nhật 1"
+                                        class="w-full aspect-[3/4] object-cover">
+                            </a>
+                            <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                                <i class="fas fa-clock mr-1"></i>2h
+                            </div>
+                        </div>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Mob Psycho 100</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 101 - Sắp ra</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="text-orange-500 text-sm">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    2 giờ
+                                </span>
+                                <button
+                                    class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors">
+                                    <i class="fas fa-bell mr-1"></i>
+                                    Theo dõi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <div class="relative">
+                                <img src="images/truyen1.jpg" alt="Sắp cập nhật 2"
+                                    class="w-full aspect-[3/4] object-cover">
+                        </a>
+                        <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-clock mr-1"></i>4h
+                        </div>
+                    </div>
+                    <div class="p-2">
+                        <a href="detail.html">
+                            <h3 class="story-title font-semibold text-lg line-clamp-1">Dr. Stone</h3>
+                        </a>
+                        <p class="text-gray-600 text-sm">Chương 233 - Sắp ra</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-orange-500 text-sm">
+                                <i class="fas fa-clock mr-1"></i>
+                                4 giờ
+                            </span>
+                            <button
+                                class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors">
+                                <i class="fas fa-bell mr-1"></i>
+                                Theo dõi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen2.jpg" alt="Sắp cập nhật 3" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                        <i class="fas fa-clock mr-1"></i>6h
+                    </div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Vinland Saga</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 201 - Sắp ra</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-orange-500 text-sm">
+                            <i class="fas fa-clock mr-1"></i>
+                            6 giờ
+                        </span>
+                        <button
+                            class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors">
+                            <i class="fas fa-bell mr-1"></i>
+                            Theo dõi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen4.jpg" alt="Sắp cập nhật 4" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                        <i class="fas fa-clock mr-1"></i>8h
+                    </div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Promised Neverland</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 182 - Sắp ra</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-orange-500 text-sm">
+                            <i class="fas fa-clock mr-1"></i>
+                            8 giờ
+                        </span>
+                        <button
+                            class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors">
+                            <i class="fas fa-bell mr-1"></i>
+                            Theo dõi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen6.jpg" alt="Sắp cập nhật 5" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                        <i class="fas fa-clock mr-1"></i>12h
+                    </div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Haikyuu!!</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 403 - Sắp ra</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-orange-500 text-sm">
+                            <i class="fas fa-clock mr-1"></i>
+                            12 giờ
+                        </span>
+                        <button
+                            class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors">
+                            <i class="fas fa-bell mr-1"></i>
+                            Theo dõi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                        <div class="relative">
+                            <img src="images/truyen7.jpg" alt="Sắp cập nhật 6" class="w-full aspect-[3/4] object-cover">
+                    </a>
+                    <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-full text-xs">
+                        <i class="fas fa-clock mr-1"></i>1d
+                    </div>
+                </div>
+                <div class="p-2">
+                    <a href="detail.html">
+                        <h3 class="story-title font-semibold text-lg line-clamp-1">Kuroko's Basketball</h3>
+                    </a>
+                    <p class="text-gray-600 text-sm">Chương 277 - Sắp ra</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-orange-500 text-sm">
+                            <i class="fas fa-clock mr-1"></i>
+                            1 ngày
+                        </span>
+                        <button
+                            class="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors">
+                            <i class="fas fa-bell mr-1"></i>
+                            Theo dõi
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- 11. Gợi Ý Truyện -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 gradient-text flex items-center">
+                        <i class="fas fa-lightbulb mr-3 text-yellow-500"></i>
+                        Gợi Ý Truyện
+                    </h2>
+
+                    <a href="#"
+                        class="w-10 h-10 gradient-text transition-transform duration-200 group p-4 rounded-full border-2 border-gray-300 hover:bg-gray-100 flex items-center justify-center">
+                        <i class="fas fa-chevron-right text-2xl"></i>
+                    </a>
+                </div>
+
+            </div>
+            <div id="suggestions-container">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" id="suggestions-grid">
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <img src="images/truyen12.jpg" alt="Gợi ý 1" class="w-full aspect-[3/4] object-cover"></a>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Food Wars!</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 315</p>
+                        </div>
+                    </div>
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <img src="images/truyen7.jpg" alt="Gợi ý 2" class="w-full aspect-[3/4] object-cover"></a>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Blue Lock</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 250</p>
+                        </div>
+                    </div>
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <img src="images/truyen9.jpg" alt="Gợi ý 3" class="w-full aspect-[3/4] object-cover"></a>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Slam Dunk</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 276</p>
+                        </div>
+                    </div>
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <img src="images/truyen14.jpg" alt="Gợi ý 4" class="w-full aspect-[3/4] object-cover"></a>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Yu Yu Hakusho</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 175</p>
+                        </div>
+                    </div>
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <img src="images/truyen2.jpg" alt="Gợi ý 5" class="w-full aspect-[3/4] object-cover"></a>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Rurouni Kenshin</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 255</p>
+                        </div>
+                    </div>
+                    <div class="story-card bg-white rounded-lg shadow-md overflow-hidden"><a href="detail.html">
+                            <img src="images/truyen1.jpg" alt="Gợi ý 6" class="w-full aspect-[3/4] object-cover"></a>
+                        <div class="p-2">
+                            <a href="detail.html">
+                                <h3 class="story-title font-semibold text-lg line-clamp-1">Great Teacher Onizuka</h3>
+                            </a>
+                            <p class="text-gray-600 text-sm">Chương 201</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <button id="load-more-btn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 pulse-custom">
+                    <i class="fas fa-plus mr-2"></i>
+                    Xem thêm
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="container mx-auto px-4 py-16">
+                <!-- Stats Section -->
+                <div class="stats-grid mb-12">
+                    <div class="stat-card">
+                        <div class="stat-number">15,000+</div>
+                        <div class="stat-label">Bộ truyện</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">500K+</div>
+                        <div class="stat-label">Chapter</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2M+</div>
+                        <div class="stat-label">Người dùng</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Cập nhật/ngày</div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Company Info -->
+                    <div class="footer-section">
+                        <div class="flex items-center mb-6">
+                            <div class="logo-icon mr-3">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <span class="text-2xl font-bold">MangaVerse</span>
+                        </div>
+                        <p class="text-gray-300 mb-6 leading-relaxed">
+                            Nền tảng đọc truyện tranh hàng đầu với thư viện khổng lồ và trải nghiệm đọc tuyệt vời.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link" title="Discord">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                            <a href="#" class="social-link" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-link"></i>
+                            Liên kết nhanh
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-home"></i>
+                                Trang chủ
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fire"></i>
+                                Truyện hot
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-star"></i>
+                                Xếp hạng
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-clock"></i>
+                                Mới cập nhật
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-random"></i>
+                                Ngẫu nhiên
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-info-circle"></i>
+                                Về chúng tôi
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-tags"></i>
+                            Thể loại phổ biến
+                        </h3>
+                        <nav>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-fist-raised"></i>
+                                Action
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-heart"></i>
+                                Romance
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-laugh"></i>
+                                Comedy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-magic"></i>
+                                Fantasy
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-ghost"></i>
+                                Horror
+                            </a>
+                            <a href="#" class="footer-link">
+                                <i class="fas fa-graduation-cap"></i>
+                                School Life
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Recent Updates -->
+                    <div class="footer-section">
+                        <h3>
+                            <i class="fas fa-clock"></i>
+                            Cập nhật gần đây
+                        </h3>
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen1.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>One Piece</h4>
+                                    <p>Chapter 1095 • 2 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen2.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>Naruto</h4>
+                                    <p>Chapter 995 • 1 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="detail.html">
+                            <div class="recent-manga">
+                                <div class="manga-cover-small"><img src="images/truyen7.jpg" alt="Onepiece"
+                                        class="rounded-md w-12"></div>
+                                <div class="manga-info-small">
+                                    <h4>Dragon Ball</h4>
+                                    <p>Chapter 2153 • 3 giờ trước</p>
+                                </div>
+                            </div>
+                        </a>
+                       
+
+                        <!-- Newsletter -->
+                        <div class="mt-6">
+                            <h4 class="text-white font-semibold mb-3">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Đăng ký nhận tin
+                            </h4>
+                            <p class="text-gray-300 mb-4 text-sm">
+                                Nhận thông báo chapter mới và tin tức manga mới nhất.
+                            </p>
+                            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                                <input type="email" class="newsletter-input" placeholder="Email của bạn..." required>
+                                <button type="submit" class="newsletter-btn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Đăng ký
+                                    </span>
+                                    <span class="loading hidden">
+                                        <div class="loading"></div>
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <p>&copy; 2024 MangaVerse. Tất cả quyền được bảo lưu.</p>
+                        <div class="footer-bottom-links">
+                            <a href="#">Chính sách bảo mật</a>
+                            <a href="#">Điều khoản sử dụng</a>
+                            <a href="#">DMCA</a>
+                            <a href="#">Liên hệ</a>
+                            <a href="#">API</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="js/layout.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const sections = document.querySelectorAll("section");
+
+        sections.forEach((section) => {
+            gsap.fromTo(
+                section,
+                { y: 150, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 95%", // bắt đầu animate khi top của section chạm 95% viewport
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+
+    </script>
+    <script>
+        // Initialize Swiper instances
+        document.addEventListener('DOMContentLoaded', function () {
+            // Banner Swiper
+            const bannerSwiper = new Swiper('.banner-swiper', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                loop: true,
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                }
+            });
+
+            // Featured Stories Swiper
+            const featuredSwiper = new Swiper('.featured-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Top Week Swiper
+            const topWeekSwiper = new Swiper('.top-week-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Top Month Swiper
+            const topMonthSwiper = new Swiper('.top-month-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Color Manga Swiper
+            const colorMangaSwiper = new Swiper('.color-manga-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Black & White Manga Swiper
+            const bwMangaSwiper = new Swiper('.bw-manga-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Hot Genre Swiper
+            const hotGenreSwiper = new Swiper('.hot-genre-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Isekai Swiper
+            const isekaiSwiper = new Swiper('.isekai-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Upcoming Swiper
+            const upcomingSwiper = new Swiper('.upcoming-swiper', {
+                slidesPerView: 2,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.getAttribute('data-tab');
+
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    });
+
+                    // Add active class to clicked button
+                    button.classList.add('tab-active');
+                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+
+                    // Show target tab content
+                    document.getElementById(targetTab + '-content').classList.remove('hidden');
+                });
+            });
+
+            // Enhanced Quiz functionality
+            const quizQuestions = [
+                {
+                    question: "Ai là tác giả của One Piece?",
+                    options: ["A. Eiichiro Oda", "B. Masashi Kishimoto", "C. Akira Toriyama"],
+                    correct: 0
+                },
+                {
+                    question: "Naruto thuộc thể loại manga nào?",
+                    options: ["A. Romance", "B. Shonen", "C. Horror"],
+                    correct: 1
+                },
+                {
+                    question: "Attack on Titan có tên tiếng Nhật là gì?",
+                    options: ["A. Shingeki no Kyojin", "B. Kimetsu no Yaiba", "C. Boku no Hero"],
+                    correct: 0
+                },
+                {
+                    question: "Ai là nhân vật chính trong Dragon Ball?",
+                    options: ["A. Vegeta", "B. Goku", "C. Piccolo"],
+                    correct: 1
+                },
+                {
+                    question: "Death Note được xuất bản năm nào?",
+                    options: ["A. 2003", "B. 2004", "C. 2005"],
+                    correct: 0
+                }
+            ];
+
+            let currentQuizIndex = 0;
+            let quizScore = 0;
+
+            function loadQuizQuestion() {
+                const currentQ = quizQuestions[currentQuizIndex];
+                const questionText = document.getElementById('question-text');
+                const quizOptions = document.getElementById('quiz-options');
+
+                questionText.textContent = currentQ.question;
+
+                quizOptions.innerHTML = '';
+                currentQ.options.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'quiz-option p-3 rounded-lg bg-white/10';
+                    optionDiv.setAttribute('data-answer', index);
+                    optionDiv.textContent = option;
+                    quizOptions.appendChild(optionDiv);
+                });
+
+                // Add event listeners to new options
+                const newOptions = quizOptions.querySelectorAll('.quiz-option');
+                newOptions.forEach((option, index) => {
+                    option.addEventListener('click', () => handleQuizAnswer(index));
+                });
+            }
+
+            function handleQuizAnswer(selectedIndex) {
+                const currentQ = quizQuestions[currentQuizIndex];
+                const options = document.querySelectorAll('.quiz-option');
+                const quizQuestion = document.querySelector('.quiz-question');
+                const quizResult = document.querySelector('.quiz-result');
+                const resultIcon = document.getElementById('result-icon');
+                const resultText = document.getElementById('result-text');
+
+                // Remove previous selections
+                options.forEach(opt => {
+                    opt.classList.remove('selected', 'correct', 'wrong');
+                });
+
+                // Mark selected option
+                options[selectedIndex].classList.add('selected');
+
+                // Show correct/wrong answers
+                if (selectedIndex === currentQ.correct) {
+                    options[selectedIndex].classList.add('correct');
+                    resultIcon.textContent = '🎉';
+                    resultText.textContent = 'Chính xác! Bạn thật am hiểu manga!';
+                    quizScore++;
+                } else {
+                    options[selectedIndex].classList.add('wrong');
+                    options[currentQ.correct].classList.add('correct');
+                    resultIcon.textContent = '❌';
+                    resultText.textContent = 'Sai rồi! Đáp án đúng đã được đánh dấu.';
+                }
+
+                // Show result after delay
+                setTimeout(() => {
+                    quizQuestion.classList.add('hidden');
+                    quizResult.classList.remove('hidden');
+                }, 1500);
+            }
+
+            // Next quiz button
+            document.getElementById('next-quiz').addEventListener('click', () => {
+                currentQuizIndex = (currentQuizIndex + 1) % quizQuestions.length;
+
+                if (currentQuizIndex === 0) {
+                    // Show final score
+                    const resultText = document.getElementById('result-text');
+                    const resultIcon = document.getElementById('result-icon');
+                    resultIcon.textContent = '🏆';
+                    resultText.textContent = `Quiz hoàn thành! Điểm của bạn: ${quizScore}/${quizQuestions.length}`;
+                    quizScore = 0; // Reset score
+
+                    setTimeout(() => {
+                        document.querySelector('.quiz-question').classList.remove('hidden');
+                        document.querySelector('.quiz-result').classList.add('hidden');
+                        loadQuizQuestion();
+                    }, 3000);
+                } else {
+                    document.querySelector('.quiz-question').classList.remove('hidden');
+                    document.querySelector('.quiz-result').classList.add('hidden');
+                    loadQuizQuestion();
+                }
+            });
+
+            // Initialize first question
+            loadQuizQuestion();
+
+            // Load more functionality
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            const suggestionsGrid = document.getElementById('suggestions-grid');
+
+            const additionalSuggestions = [
+                { title: 'Tokyo Ghoul', chapter: 'Chương 144' },
+                { title: 'Fairy Tail', chapter: 'Chương 545' },
+                { title: 'Seven Deadly Sins', chapter: 'Chương 346' },
+                { title: 'Assassination Classroom', chapter: 'Chương 180' },
+                { title: 'Code Geass', chapter: 'Chương 25' },
+                { title: 'Steins;Gate', chapter: 'Chương 24' }
+            ];
+
+            let loadMoreClicked = false;
+
+            loadMoreBtn.addEventListener('click', () => {
+                if (!loadMoreClicked) {
+                    // Add loading animation
+                    loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Đang tải...';
+
+                    setTimeout(() => {
+                        additionalSuggestions.forEach((story, index) => {
+                            const randomNumber = Math.floor(Math.random() * 14) + 1; // Tạo số ngẫu nhiên từ 1 đến 14
+
+                            const storyCard = document.createElement('div');
+                            storyCard.className = 'story-card bg-white rounded-lg shadow-md overflow-hidden opacity-0 transform translate-y-4';
+                            storyCard.innerHTML = `
+                                 <a href="detail.html"><img src="images/truyen${randomNumber}.jpg" alt="${story.title}" class="w-full aspect-[3/4] object-cover"></a>
+                                <div class="p-2">
+                                     <a href="detail.html"><h3 class="story-title font-semibold text-lg line-clamp-1">${story.title}</h3>
+                                    </a><p class="text-gray-600 text-sm">${story.chapter}</p>
+                                </div>
+                            `;
+                            suggestionsGrid.appendChild(storyCard);
+
+                            // Animate in with delay
+                            setTimeout(() => {
+                                storyCard.classList.remove('opacity-0', 'translate-y-4');
+                                storyCard.classList.add('opacity-100', 'translate-y-0');
+                            }, index * 100);
+                        });
+
+                        loadMoreBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Đã tải hết';
+                        loadMoreBtn.disabled = true;
+                        loadMoreBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                        loadMoreBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'pulse-custom');
+                        loadMoreClicked = true;
+                    }, 1500);
+
+                }
+            });
+
+
+
+            // Bookmark functionality
+            const bookmarkBtns = document.querySelectorAll('.fas.fa-bookmark');
+            bookmarkBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    btn.classList.toggle('text-gray-400');
+                    btn.classList.toggle('text-blue-500');
+                });
+            });
+
+            // Follow button functionality
+            const followBtns = document.querySelectorAll('button');
+            followBtns.forEach(btn => {
+                if (btn.textContent.includes('Theo dõi')) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (btn.textContent.includes('Theo dõi') && !btn.textContent.includes('Đã theo dõi')) {
+                            btn.innerHTML = '<i class="fas fa-check mr-1"></i>Đã theo dõi';
+                            btn.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                            btn.classList.add('bg-green-500', 'hover:bg-green-600');
+                        } else if (btn.textContent.includes('Đã theo dõi')) {
+                            btn.innerHTML = '<i class="fas fa-bell mr-1"></i>Theo dõi';
+                            btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                            btn.classList.add('bg-orange-500', 'hover:bg-orange-600');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
